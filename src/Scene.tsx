@@ -1,4 +1,4 @@
-import type { SceneId } from '../shared/protocol';
+import type { SceneId } from './scenes';
 import { ArcadeArt, HighwayArt } from './OtherScenes';
 
 const buildings = [

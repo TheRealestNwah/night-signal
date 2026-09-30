@@ -1,20 +1,23 @@
 # Asset and source register
 
-Night Signal's checked-in ambient audio and scene artwork were created for this project. No commercial music, third-party recordings, downloaded artwork, external font files, or streaming service audio are included.
+Night Signal's checked-in audio and scene artwork were created for this project. No commercial music, third-party recordings, downloaded artwork, external font files, or streaming service audio are included.
 
-## Synthetic demo soundscapes
+## Synthetic soundscape layers
 
-These are procedural demonstration soundscapes, created by the coding assistant for Night Signal. They are synthesized from sine waves and seeded noise. They do not contain sampled recordings or licensed third-party music. No third-party asset permission or attribution is required for their incorporated material. They are included for use and redistribution as part of Night Signal; this register does not assert exclusive copyright in AI-assisted output.
+These are procedural soundscape layers, created by the coding assistant for Night Signal. They are synthesized from sine waves and seeded, filtered noise. They do not contain sampled recordings or licensed third-party music. No third-party asset permission or attribution is required for their incorporated material. They are included for use and redistribution as part of Night Signal; this register does not assert exclusive copyright in AI-assisted output.
 
-| File | Display title | Intended environment | Source |
-| --- | --- | --- | --- |
-| `public/audio/windowlight.wav` | Windowlight | Rainy Apartment | Original rain texture and soft synthesized chords |
-| `public/audio/last-exit.wav` | Last Exit | Midnight Highway | Original low road texture, sine pads, and a gentle pulse |
-| `public/audio/afterimage.wav` | Afterimage | Empty Arcade | Original synthesized chimes and pads; no game samples |
+| File | Scene | Layer | Loop | Source |
+| --- | --- | --- | --- | --- |
+| `public/audio/apartment-rain.wav` | Rainy Apartment | Rain on the window | 48.00 s | Low-passed rain wash, short droplet ticks, sill drips, two distant thunder swells |
+| `public/audio/apartment-lofi.wav` | Rainy Apartment | Lofi | 54.86 s | Original 16-bar piece at 70 BPM: electric-piano chords, sine bass, soft drums, sparse melody, faint record crackle |
+| `public/audio/highway-road.wav` | Midnight Highway | Road hum | 48.00 s | Low cabin rumble, tyre noise, engine drone, expansion-joint thumps, two passing swells |
+| `public/audio/highway-synth.wav` | Midnight Highway | Soft synth | 60.00 s | Original sine pads, a rounded low pulse, and a slow bell phrase |
+| `public/audio/arcade-hum.wav` | Empty Arcade | Machine hum | 48.00 s | Ventilation noise, mains hum, and quiet distant attract-mode blips |
+| `public/audio/arcade-chimes.wav` | Empty Arcade | Chimes | 60.00 s | Original synthesized chimes and pads; no game samples or game melodies |
 
-All three files are finite 90-second mono PCM WAVs at 22,050 Hz and 16-bit depth. They fade in and out and do not automatically loop. Windowlight uses a much quieter filtered rain bed with no direct white-noise layer, and a maximum sample peak of approximately -11.1 dBFS. The other tracks peak at approximately -4.7 dBFS. The host can replay them after completion. They are identified as synthetic demo audio in the application and README.
+All six files are mono PCM WAVs at 22,050 Hz and 16-bit depth, about 14 MB in total. Each is a seamless loop: the generator renders past the loop length and folds the overhang back onto the start, so decays and noise beds wrap without a click. Layers are loudness-matched by RMS with peaks kept below -1 dBFS. The rain and other noise beds are low-pass filtered; no layer contains raw white noise.
 
-The reproducible source is [`scripts/generate-audio.mjs`](../scripts/generate-audio.mjs). Run `npm run audio:generate` to recreate all three files without a network connection or sample library. The generator uses fixed random seeds and contains the synthesis, arrangements, fades, and WAV encoder.
+The reproducible source is [`scripts/generate-audio.mjs`](../scripts/generate-audio.mjs). Run `npm run audio:generate` to recreate all six files without a network connection or sample library. The generator uses fixed random seeds and contains the synthesis, arrangements, loop folding, and WAV encoder.
 
 ## Artwork and typography
 
@@ -24,7 +27,7 @@ Interface icons come from the `lucide-react` package under the ISC license, with
 
 ## Replacing the audio or artwork
 
-The audio catalog lives in `shared/protocol.ts`. To replace a track, place the permitted audio file in `public/audio/`, update its URL and actual duration in the catalog, and add its provenance and permitted uses to this register. Keep every catalog ID unique. Do not rely on a provider's playback permission as permission to redistribute a downloaded file.
+The scene catalog lives in `src/scenes.ts`. To replace a layer, place the permitted audio file in `public/audio/`, update its URL in the catalog, and add its provenance and permitted uses to this register. A replacement must loop cleanly from its last sample to its first. Keep every layer ID unique. Do not rely on a provider's playback permission as permission to redistribute a downloaded file.
 
 For any future third-party asset, record its creator, original source URL, exact license or written permission, required attribution, modifications, and redistribution restrictions before committing the file. Preserve a copy of permission where appropriate. Do not add proprietary game imagery or music without authorization.
 
