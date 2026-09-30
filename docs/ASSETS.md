@@ -8,7 +8,6 @@ These are procedural soundscape layers, created by the coding assistant for Nigh
 
 | File | Scene | Layer | Loop | Source |
 | --- | --- | --- | --- | --- |
-| `public/audio/apartment-rain.wav` | Rainy Apartment | Rain on the window | 48.00 s | Rain only: a dense spray of tiny impacts, bigger drops on the glass, sill drips |
 | `public/audio/apartment-lofi.wav` | Rainy Apartment | Lofi | 54.86 s | Original 16-bar piece at 70 BPM: electric-piano chords, sine bass, soft drums, sparse melody, faint record crackle |
 | `public/audio/highway-road.wav` | Midnight Highway | Road hum | 48.00 s | Engine note with slow pitch drift, paired expansion-joint thumps, two cars passing the other way, over low road noise |
 | `public/audio/highway-synth.wav` | Midnight Highway | Soft synth | 60.00 s | Original sine pads, a rounded low pulse, and a slow bell phrase |
@@ -20,7 +19,7 @@ These are procedural soundscape layers, created by the coding assistant for Nigh
 | `public/audio/lighthouse-waves.wav` | Lighthouse Keeper | Waves | 48.00 s | Six waves: a wash that brightens and drains, foam fizz of tiny bubbles, pebbles rolling back, over a low swell |
 | `public/audio/lighthouse-drone.wav` | Lighthouse Keeper | Drone and bell | 60.00 s | Original sine drone locked to the loop, slow pads, a sparse bell phrase, and a distant buoy bell |
 
-All audio files, synthetic and recorded, are mono PCM WAVs at 22,050 Hz and 16-bit depth, about 2–3.2 MB each. Each is a seamless loop: the generator renders past the loop length and folds the overhang back onto the start, so decays and noise beds wrap without a click. Layers are loudness-matched by RMS with peaks kept below -1 dBFS. Ambience layers are built mostly from individual synthesized events (drops, clatter, crackle, bubbles), with any noise bed band-limited and kept in the background; no layer contains raw white noise.
+All audio files, synthetic and recorded, are mono PCM WAVs at 22,050 Hz and 16-bit depth, about 2–4.2 MB each. Each is a seamless loop: the generator renders past the loop length and folds the overhang back onto the start, so decays and noise beds wrap without a click. Layers are loudness-matched by RMS with peaks kept below -1 dBFS. Ambience layers are built mostly from individual synthesized events (drops, clatter, crackle, bubbles), with any noise bed band-limited and kept in the background; no layer contains raw white noise.
 
 The reproducible source is [`scripts/generate-audio.mjs`](../scripts/generate-audio.mjs). Run `npm run audio:generate` to recreate every synthetic file without a network connection or sample library. The generator uses fixed random seeds and contains the synthesis, arrangements, loop folding, and WAV encoder.
 
@@ -31,10 +30,13 @@ These layers are processed from third-party recordings. They are **not** covered
 | File | Scene | Layer | Loop | Source | License |
 | --- | --- | --- | --- | --- | --- |
 | `public/audio/train-rails.wav` | Night Train | Rails | 72.17 s | ["railway -Train"](https://pixabay.com/sound-effects/film-special-effects-railway-train-339502/) by IMGMIDI, Pixabay sound effect 339502 | [Pixabay Content License](https://pixabay.com/service/license-summary/) |
+| `public/audio/apartment-rain.wav` | Rainy Apartment | Rain on the window | 94.00 s | ["Thunderstorm 2"](https://pixabay.com/sound-effects/film-special-effects-thunderstorm-2-516370/) by loswin23, Pixabay sound effect 516370 | [Pixabay Content License](https://pixabay.com/service/license-summary/) |
 
 The Pixabay Content License allows free use and modification without attribution, but not selling or distributing the content on a standalone basis. Credit is given here anyway.
 
 Modifications to the railway recording: decoded from the downloaded MP3, downmixed to mono and resampled to 22,050 Hz; its slow crescendo levelled with a smoothed 4-second RMS envelope; spliced into two passes (the whole recording, then again from 13.29 s) with a 1.5-second equal-power crossfade placed where the clatter rhythm lines up; the end crossfaded over the start for a seamless loop; loudness-matched to the other ambience layers (RMS 0.10, peaks below -1 dBFS).
+
+Modifications to the thunderstorm recording: decoded from the downloaded MP3, downmixed to mono and resampled to 22,050 Hz; the excerpt from 30 s to 126 s kept; its loudness swings halved in dB with a smoothed 1-second RMS envelope, so thunder rolls swell rather than jump out; the last 2 seconds crossfaded over the start for a seamless loop; loudness-matched (RMS 0.10, peaks below -1 dBFS).
 
 ## Artwork and typography
 

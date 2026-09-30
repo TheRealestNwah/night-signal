@@ -133,49 +133,6 @@ function addNoiseSwell(mix, start, length, random, cutoff, strength, envelope) {
 
 const layers = [
   {
-    id: 'apartment-rain', seed: 104729, rms: 0.10, warmth: 4500,
-    build(random) {
-      return render(48, 10, mix => {
-        const seconds = 48;
-        // Rain, and only rain: a dense spray of tiny impacts, each either a soft tick or a short burst of spray.
-        for (let count = seconds * 420; count > 0; count--) {
-          const start = random.between(0, seconds);
-          const decay = random.between(0.001, 0.003);
-          const strength = 0.012 + 0.03 * random.between(0, 1) ** 3;
-          if (count % 2) {
-            const frequency = random.between(700, 2400);
-            addEvent(mix, start, decay * 6, age =>
-              Math.sin(twoPi * frequency * age) * Math.min(1, age / 0.0005) * Math.exp(-age / decay) * (1 - ease(age / (decay * 6))) * strength);
-          } else {
-            const floor = lowpass(500);
-            addEvent(mix, start, decay * 6, age => {
-              const white = random();
-              return (white - floor(white)) * Math.min(1, age / 0.0005) * Math.exp(-age / decay) * (1 - ease(age / (decay * 6))) * strength * 0.8;
-            });
-          }
-        }
-        // Bigger drops landing on the glass.
-        for (let count = seconds * 12; count > 0; count--) {
-          const frequency = 1200 + 1800 * random.between(0, 1) ** 2;
-          const decay = random.between(0.004, 0.012);
-          const strength = 0.02 + 0.05 * random.between(0, 1) ** 3;
-          addEvent(mix, random.between(0, seconds), decay * 7, age =>
-            Math.sin(twoPi * frequency * age) * Math.min(1, age / 0.0008) * Math.exp(-age / decay) * (1 - ease(age / (decay * 7))) * strength);
-        }
-        // Drips from the sill, each with a small downward chirp.
-        for (let count = Math.round(seconds * 1.1); count > 0; count--) {
-          const frequency = random.between(480, 1050);
-          const decay = random.between(0.03, 0.06);
-          const strength = random.between(0.03, 0.06);
-          addEvent(mix, random.between(0, seconds), decay * 6, age => {
-            const phase = twoPi * frequency * (age + 0.4 * 0.012 * (1 - Math.exp(-age / 0.012)));
-            return Math.sin(phase) * Math.min(1, age / 0.002) * Math.exp(-age / decay) * (1 - ease(age / (decay * 6))) * strength;
-          });
-        }
-      });
-    },
-  },
-  {
     id: 'apartment-lofi', seed: 611953, rms: 0.13, warmth: 3200,
     build(random) {
       const beat = 60 / 70;
