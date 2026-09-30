@@ -1,2 +1,62 @@
-# night-signal
-An atmospheric listening room for shared late-night audio, animated environments, and notes from passing listeners.
+# Night Signal
+
+A little quiet for the late hours. Pick a calming illustrated scene, press **Start listening**, and let it loop while you read, work, or drift off.
+
+Each scene pairs an ASMR-style ambience with a music layer, and you set the balance yourself:
+
+| Scene | Ambience | Music |
+| --- | --- | --- |
+| Rainy Apartment | Rain on the window | Lofi |
+| Midnight Highway | Road hum | Soft synth |
+| Empty Arcade | Machine hum | Chimes |
+
+Night Signal is a static site: React and Vite, with the Web Audio API for playback. It has no server, accounts, database, tracking, paid APIs, or streaming services.
+
+All audio is **original and procedurally synthesized** by a script in this repository; none of it is sampled or third-party music. Scene artwork is original SVG/CSS, with system fonts and Lucide interface icons. See the [asset and source register](docs/ASSETS.md) for provenance and replacement instructions.
+
+## Run locally
+
+Use Node.js **24.15 or newer within the Node 24 release line** and npm. CI pins Node 24.20.0.
+
+```sh
+npm ci
+npm run dev
+```
+
+Open [127.0.0.1:3000](http://127.0.0.1:3000). Nothing is downloaded or played until you press Start listening, because browsers restrict automatic playback. The layer sliders, overall volume, and mute are remembered in your browser's local storage. A scene can be linked directly, for example `/#highway`.
+
+## Build and host
+
+```sh
+npm run build
+```
+
+The `dist/` folder is the whole site. Upload it to any static host (GitHub Pages, Netlify, Cloudflare Pages, or a plain web server). `npm run preview` serves the built site at [127.0.0.1:4173](http://127.0.0.1:4173) for a final look. No hosting destination has been configured by this repository.
+
+## Layout
+
+- `src/scenes.ts` is the catalog: each scene's text and its audio layers.
+- `src/useSoundscape.ts` loads a scene's layers, loops them, and crossfades between scenes.
+- `src/mix.ts` holds the level math and saved preferences.
+- `src/Scene.tsx` and `src/OtherScenes.tsx` draw the scenes; `src/App.tsx` is the interface.
+- `public/audio/` contains the looping layers; `scripts/generate-audio.mjs` reproduces them without external samples or dependencies.
+
+Adding a scene means adding its artwork, its layers in the generator, and one catalog entry. The player does not change.
+
+## Checks and tests
+
+```sh
+npm run check
+npx playwright install chromium
+npm run test:e2e
+```
+
+`check` runs TypeScript checking, ESLint, unit tests, and the production build. The unit tests also inspect every audio file for format, headroom, and a click-free loop seam. The browser suite uses Playwright at desktop and phone sizes against the production build. CI runs both commands for every pull request and each push to `main`; browser failure artifacts are retained for seven days.
+
+To regenerate the included audio:
+
+```sh
+npm run audio:generate
+```
+
+The generator uses fixed random seeds, so the output is identical on every run.
