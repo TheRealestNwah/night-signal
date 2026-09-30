@@ -14,14 +14,16 @@ These are procedural soundscape layers, created by the coding assistant for Nigh
 | `public/audio/highway-synth.wav` | Midnight Highway | Soft synth | 60.00 s | Original sine pads, a rounded low pulse, and a slow bell phrase |
 | `public/audio/arcade-hum.wav` | Empty Arcade | Machine hum | 48.00 s | Ventilation noise, mains hum, and quiet distant attract-mode blips |
 | `public/audio/arcade-chimes.wav` | Empty Arcade | Chimes | 60.00 s | Original synthesized chimes and pads; no game samples or game melodies |
+| `public/audio/train-rails.wav` | Night Train | Rails | 48.00 s | Carriage rumble, soft wheel noise, rail-joint rhythm, one distant two-tone horn |
+| `public/audio/train-keys.wav` | Night Train | Keys | 60.00 s | Original 16-bar piece at 64 BPM: electric-piano chords, sine bass, sparse melody |
 
-All six files are mono PCM WAVs at 22,050 Hz and 16-bit depth, about 14 MB in total. Each is a seamless loop: the generator renders past the loop length and folds the overhang back onto the start, so decays and noise beds wrap without a click. Layers are loudness-matched by RMS with peaks kept below -1 dBFS. The rain and other noise beds are low-pass filtered; no layer contains raw white noise.
+All files are mono PCM WAVs at 22,050 Hz and 16-bit depth, about 2–2.6 MB each. Each is a seamless loop: the generator renders past the loop length and folds the overhang back onto the start, so decays and noise beds wrap without a click. Layers are loudness-matched by RMS with peaks kept below -1 dBFS. The rain and other noise beds are low-pass filtered; no layer contains raw white noise.
 
-The reproducible source is [`scripts/generate-audio.mjs`](../scripts/generate-audio.mjs). Run `npm run audio:generate` to recreate all six files without a network connection or sample library. The generator uses fixed random seeds and contains the synthesis, arrangements, loop folding, and WAV encoder.
+The reproducible source is [`scripts/generate-audio.mjs`](../scripts/generate-audio.mjs). Run `npm run audio:generate` to recreate every file without a network connection or sample library. The generator uses fixed random seeds and contains the synthesis, arrangements, loop folding, and WAV encoder.
 
 ## Artwork and typography
 
-The Rainy Apartment, Midnight Highway, and Empty Arcade illustrations and animations are original SVG/CSS artwork authored by the coding assistant for this project. There are no incorporated third-party image assets. Typography uses system fonts installed on the visitor's device; no fonts are downloaded or redistributed.
+The Rainy Apartment, Midnight Highway, Empty Arcade, and Night Train illustrations and animations are original SVG/CSS artwork authored by the coding assistant for this project. There are no incorporated third-party image assets. Typography uses system fonts installed on the visitor's device; no fonts are downloaded or redistributed.
 
 Interface icons come from the `lucide-react` package under the ISC license, with some Feather-derived icons under the MIT license. Both notices are included below and in the installed dependency's `LICENSE` file. The artwork attribution above does not describe these library icons as original project artwork.
 
