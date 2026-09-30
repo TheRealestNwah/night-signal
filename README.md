@@ -8,7 +8,7 @@ Each scene pairs an ASMR-style ambience with a music layer, and you set the bala
 | --- | --- | --- |
 | Rainy Apartment | Rain on the window | Lofi |
 | Midnight Highway | Road hum | Soft synth |
-| Empty Arcade | Machine hum | Chimes |
+| Empty Arcade | Neon hum | Chimes |
 | Night Train | Rails | Keys |
 | Snowed-In Cabin | Fire and wind | Felt piano |
 | Lighthouse Keeper | Waves | Drone and bell |

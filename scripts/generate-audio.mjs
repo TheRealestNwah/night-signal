@@ -134,44 +134,43 @@ const layers = [
   {
     id: 'apartment-rain', seed: 104729, rms: 0.10, warmth: 4500,
     build(random) {
-      return render(48, 10, (mix, frame) => {
-        // A light wash of rain on glass, kept well behind the drops themselves.
-        const wash = resonator(0.7);
-        addBed(mix, frame, random, (white, t) => wash(white, 1400) * 0.035 * (1 + 0.15 * drift(frame, t, 2)));
-        // Patter: a dense cloud of tiny, soft drops.
-        for (let count = Math.round(frame.seconds * 260); count > 0; count--) {
-          const frequency = random.between(700, 2200);
-          const decay = random.between(0.0015, 0.004);
-          const strength = 0.01 + 0.03 * random.between(0, 1) ** 3;
-          addEvent(mix, random.between(0, frame.seconds), decay * 6, age =>
-            Math.sin(twoPi * frequency * age) * Math.min(1, age / 0.0006) * Math.exp(-age / decay) * (1 - ease(age / (decay * 6))) * strength);
+      return render(48, 10, mix => {
+        const seconds = 48;
+        // Rain, and only rain: a dense spray of tiny impacts, each either a soft tick or a short burst of spray.
+        for (let count = seconds * 420; count > 0; count--) {
+          const start = random.between(0, seconds);
+          const decay = random.between(0.001, 0.003);
+          const strength = 0.012 + 0.03 * random.between(0, 1) ** 3;
+          if (count % 2) {
+            const frequency = random.between(700, 2400);
+            addEvent(mix, start, decay * 6, age =>
+              Math.sin(twoPi * frequency * age) * Math.min(1, age / 0.0005) * Math.exp(-age / decay) * (1 - ease(age / (decay * 6))) * strength);
+          } else {
+            const floor = lowpass(500);
+            addEvent(mix, start, decay * 6, age => {
+              const white = random();
+              return (white - floor(white)) * Math.min(1, age / 0.0005) * Math.exp(-age / decay) * (1 - ease(age / (decay * 6))) * strength * 0.8;
+            });
+          }
         }
         // Bigger drops landing on the glass.
-        for (let count = Math.round(frame.seconds * 12); count > 0; count--) {
+        for (let count = seconds * 12; count > 0; count--) {
           const frequency = 1200 + 1800 * random.between(0, 1) ** 2;
           const decay = random.between(0.004, 0.012);
-          const strength = 0.03 + 0.09 * random.between(0, 1) ** 3;
-          addEvent(mix, random.between(0, frame.seconds), decay * 7, age =>
+          const strength = 0.02 + 0.05 * random.between(0, 1) ** 3;
+          addEvent(mix, random.between(0, seconds), decay * 7, age =>
             Math.sin(twoPi * frequency * age) * Math.min(1, age / 0.0008) * Math.exp(-age / decay) * (1 - ease(age / (decay * 7))) * strength);
         }
-        // Heavier drips from the sill, each with a small downward chirp.
-        for (let count = Math.round(frame.seconds * 1.1); count > 0; count--) {
+        // Drips from the sill, each with a small downward chirp.
+        for (let count = Math.round(seconds * 1.1); count > 0; count--) {
           const frequency = random.between(480, 1050);
           const decay = random.between(0.03, 0.06);
-          const strength = random.between(0.04, 0.09);
-          addEvent(mix, random.between(0, frame.seconds), decay * 6, age => {
+          const strength = random.between(0.03, 0.06);
+          addEvent(mix, random.between(0, seconds), decay * 6, age => {
             const phase = twoPi * frequency * (age + 0.4 * 0.012 * (1 - Math.exp(-age / 0.012)));
             return Math.sin(phase) * Math.min(1, age / 0.002) * Math.exp(-age / decay) * (1 - ease(age / (decay * 6))) * strength;
           });
         }
-        // Water running down the drainpipe: small bubbling notes that rise as they pop.
-        for (let count = Math.round(frame.seconds * 7); count > 0; count--) {
-          const frequency = random.between(380, 760);
-          addEvent(mix, random.between(0, frame.seconds), 0.08, age =>
-            Math.sin(twoPi * frequency * (age + 3 * age * age)) * Math.min(1, age / 0.004) * Math.exp(-age / 0.02) * (1 - ease(age / 0.08)) * 0.035);
-        }
-        // One far-off roll of thunder, more felt than heard.
-        addNoiseSwell(mix, 30, 9, random, 95, 0.3, age => ease(age / 1.6) * Math.exp(-age / 2.6) * (1 - ease((age - 6) / 3)));
       });
     },
   },
@@ -290,32 +289,25 @@ const layers = [
   },
   {
     id: 'arcade-hum', seed: 155921, rms: 0.08,
-    build(random) {
-      return render(48, 6, (mix, frame) => {
-        // A little ventilation air, well under the machines.
-        const air = resonator(0.6);
-        addBed(mix, frame, random, (white, t) => air(white, 700) * 0.025 * (1 + 0.1 * drift(frame, t, 3)));
-        // Mains hum from the cabinets, and a ceiling fan's slow beat.
-        addEvent(mix, 0, frame.seconds, age => Math.sin(twoPi * 60 * age) * 0.020 + Math.sin(twoPi * 120 * age) * 0.011 + Math.sin(twoPi * 180 * age) * 0.004
-          + Math.sin(twoPi * 90 * age) * (1 + 0.6 * Math.sin(twoPi * 7 * age)) * 0.009);
-        // Cabinets around the room run their attract modes.
-        for (let start = random.between(1, 3); start < frame.seconds - 1; start += random.between(2.5, 6)) {
-          const root = 67 + Math.round(random.between(0, 10));
-          const shape = [[0, 4, 7, 12], [0, 3, 7, 10], [12, 7, 4, 0], [0, 7, 12, 7]][Math.floor(random.between(0, 3.99))];
-          const steps = 2 + Math.round(random.between(0, 2));
-          const strength = random.between(0.012, 0.022);
-          for (let step = 0; step < steps; step++) {
-            const frequency = midi(root + shape[step]);
-            addEvent(mix, start + step * 0.13, 0.5, age =>
-              (Math.sin(twoPi * frequency * age) + Math.sin(twoPi * frequency * 3 * age) * 0.12) * Math.min(1, age / 0.006) * Math.exp(-age / 0.11) * (1 - ease(age / 0.5)) * strength);
+    build() {
+      // Neon signs: the buzz of gas tubes on mains power, 120 Hz and its harmonics. Whole cycles per loop keep the seam clean.
+      const flickers = [[7.4, 0.08], [7.6, 0.12], [22.9, 0.1], [36.2, 0.07], [36.35, 0.1], [36.6, 0.06]];
+      return render(48, 2, (mix, frame) => {
+        addEvent(mix, 0, frame.seconds, age => {
+          // One sign stutters now and then, dipping for a moment.
+          let dip = 1;
+          for (const [at, length] of flickers) dip *= 1 - 0.7 * Math.exp(-(((age - at - length / 2) / (length / 2)) ** 4));
+          let near = 0, far = 0;
+          for (let harmonic = 1; harmonic <= 12; harmonic++) {
+            near += Math.sin(twoPi * 120 * harmonic * age + harmonic * 0.9) / harmonic ** 1.3;
+            far += Math.sin(twoPi * 120 * harmonic * age + harmonic * 2.3) / harmonic ** 1.9;
           }
-        }
-        // Now and then a coin drops into a return tray.
-        for (const start of [9.5, 31]) {
-          for (const [bounce, level] of [[0, 1], [0.11, 0.5], [0.19, 0.25]]) {
-            addEvent(mix, start + bounce, 0.4, age => (Math.sin(twoPi * 1850 * age) + Math.sin(twoPi * 2760 * age) * 0.6 + Math.sin(twoPi * 4120 * age) * 0.25)
-              * Math.min(1, age / 0.001) * Math.exp(-age / 0.09) * (1 - ease(age / 0.4)) * 0.012 * level);
-          }
+          const transformer = Math.sin(twoPi * 60 * age) + Math.sin(twoPi * 180 * age) * 0.4 + Math.sin(twoPi * 300 * age) * 0.15;
+          return near * 0.02 * dip * (1 + 0.08 * drift(frame, age, 3)) + far * 0.014 * (1 + 0.1 * drift(frame, age, 5, 1.7)) + transformer * 0.008;
+        });
+        // The faint tick of the tube catching again after each flicker.
+        for (const [at, length] of flickers) {
+          addEvent(mix, at + length, 0.05, age => Math.sin(twoPi * 1400 * age) * Math.min(1, age / 0.0008) * Math.exp(-age / 0.006) * (1 - ease(age / 0.05)) * 0.02);
         }
       });
     },
@@ -339,10 +331,9 @@ const layers = [
     id: 'train-rails', seed: 192161, rms: 0.10,
     build(random) {
       return render(48, 6, (mix, frame) => {
-        // Carriage rumble kept low, with a soft band of wheel noise.
-        const rumble = lowpass(120), rumbleSmooth = lowpass(120), wheel = resonator(0.9);
-        addBed(mix, frame, random, (white, t) => rumbleSmooth(rumble(white)) * 0.25 * (1 + 0.12 * drift(frame, t, 4))
-          + wheel(white, 450) * 0.03 * (1 + 0.2 * drift(frame, t, 6, 0.5)));
+        // The running gear: a low traction hum and the soft singing of wheels on steel, both tonal rather than windy.
+        addEvent(mix, 0, frame.seconds, age => (Math.sin(twoPi * 45 * age) + Math.sin(twoPi * 90 * age) * 0.5 + Math.sin(twoPi * 135 * age) * 0.25) * 0.018 * (1 + 0.1 * drift(frame, age, 4))
+          + (Math.sin(twoPi * 620 * age) + Math.sin(twoPi * 930 * age) * 0.5) * 0.0025 * (1 + 0.5 * drift(frame, age, 3, 0.6)));
         // Wheels over rail joints: two bogies of two axles, once per carriage length, each with a faint ring of steel.
         for (let start = 0.3; start < frame.seconds; start += 1.6) {
           for (const [offset, strength] of [[0, 0.11], [0.13, 0.085], [0.62, 0.1], [0.75, 0.07]]) {

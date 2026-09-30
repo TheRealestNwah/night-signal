@@ -23,9 +23,9 @@ export const SCENES: SceneInfo[] = [
     ],
   },
   {
-    id: 'arcade', name: 'Empty Arcade', soundscape: 'Afterimage', description: 'Stay a little past closing.', tag: 'Machine hum / gentle chimes',
+    id: 'arcade', name: 'Empty Arcade', soundscape: 'Afterimage', description: 'Stay a little past closing.', tag: 'Neon hum / gentle chimes',
     layers: [
-      { id: 'arcade-hum', kind: 'ambience', label: 'Machine hum', url: '/audio/arcade-hum.wav', defaultLevel: 0.25 },
+      { id: 'arcade-hum', kind: 'ambience', label: 'Neon hum', url: '/audio/arcade-hum.wav', defaultLevel: 0.25 },
       { id: 'arcade-chimes', kind: 'music', label: 'Chimes', url: '/audio/arcade-chimes.wav', defaultLevel: 0.5 },
     ],
   },
