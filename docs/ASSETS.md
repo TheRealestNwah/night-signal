@@ -8,20 +8,20 @@ These are procedural soundscape layers, created by the coding assistant for Nigh
 
 | File | Scene | Layer | Loop | Source |
 | --- | --- | --- | --- | --- |
-| `public/audio/apartment-rain.wav` | Rainy Apartment | Rain on the window | 48.00 s | Low-passed rain wash, short droplet ticks, sill drips, two distant thunder swells |
+| `public/audio/apartment-rain.wav` | Rainy Apartment | Rain on the window | 48.00 s | Dense patter of tiny soft drops, bigger drops on the glass, sill drips, a bubbling drainpipe, one distant thunder swell, over a light rain wash |
 | `public/audio/apartment-lofi.wav` | Rainy Apartment | Lofi | 54.86 s | Original 16-bar piece at 70 BPM: electric-piano chords, sine bass, soft drums, sparse melody, faint record crackle |
-| `public/audio/highway-road.wav` | Midnight Highway | Road hum | 48.00 s | Low cabin rumble, tyre noise, engine drone, expansion-joint thumps, two passing swells |
+| `public/audio/highway-road.wav` | Midnight Highway | Road hum | 48.00 s | Engine note with slow pitch drift, paired expansion-joint thumps, two cars passing the other way, over low road noise |
 | `public/audio/highway-synth.wav` | Midnight Highway | Soft synth | 60.00 s | Original sine pads, a rounded low pulse, and a slow bell phrase |
-| `public/audio/arcade-hum.wav` | Empty Arcade | Machine hum | 48.00 s | Ventilation noise, mains hum, and quiet distant attract-mode blips |
+| `public/audio/arcade-hum.wav` | Empty Arcade | Machine hum | 48.00 s | Mains hum, a ceiling fan's slow beat, attract-mode blips from several cabinets, two coin drops, a little ventilation air |
 | `public/audio/arcade-chimes.wav` | Empty Arcade | Chimes | 60.00 s | Original synthesized chimes and pads; no game samples or game melodies |
-| `public/audio/train-rails.wav` | Night Train | Rails | 48.00 s | Carriage rumble, soft wheel noise, rail-joint rhythm, one distant two-tone horn |
+| `public/audio/train-rails.wav` | Night Train | Rails | 48.00 s | Rail-joint clatter with a faint steel ring, carriage creaks, one distant two-tone horn, over low rumble |
 | `public/audio/train-keys.wav` | Night Train | Keys | 60.00 s | Original 16-bar piece at 64 BPM: electric-piano chords, sine bass, sparse melody |
-| `public/audio/cabin-fire.wav` | Snowed-In Cabin | Fire and wind | 48.00 s | Low-passed fire bed, muffled gusting wind, sparse soft crackle, two logs settling |
+| `public/audio/cabin-fire.wav` | Snowed-In Cabin | Fire and wind | 48.00 s | Soft crackle and knot pops, wind whistling through a gap in the logs, two logs settling, over a low fire bed |
 | `public/audio/cabin-piano.wav` | Snowed-In Cabin | Felt piano | 64.00 s | Original 16-bar piece at 60 BPM: soft-hammered piano arpeggios, low bass notes, a sparse melody |
-| `public/audio/lighthouse-waves.wav` | Lighthouse Keeper | Waves | 48.00 s | Low sea swell, light wind, six low-passed wave washes with soft foam tails |
+| `public/audio/lighthouse-waves.wav` | Lighthouse Keeper | Waves | 48.00 s | Six waves: a wash that brightens and drains, foam fizz of tiny bubbles, pebbles rolling back, over a low swell |
 | `public/audio/lighthouse-drone.wav` | Lighthouse Keeper | Drone and bell | 60.00 s | Original sine drone locked to the loop, slow pads, a sparse bell phrase, and a distant buoy bell |
 
-All files are mono PCM WAVs at 22,050 Hz and 16-bit depth, about 2–2.6 MB each. Each is a seamless loop: the generator renders past the loop length and folds the overhang back onto the start, so decays and noise beds wrap without a click. Layers are loudness-matched by RMS with peaks kept below -1 dBFS. The rain and other noise beds are low-pass filtered; no layer contains raw white noise.
+All files are mono PCM WAVs at 22,050 Hz and 16-bit depth, about 2–2.6 MB each. Each is a seamless loop: the generator renders past the loop length and folds the overhang back onto the start, so decays and noise beds wrap without a click. Layers are loudness-matched by RMS with peaks kept below -1 dBFS. Ambience layers are built mostly from individual synthesized events (drops, clatter, crackle, bubbles), with any noise bed band-limited and kept in the background; no layer contains raw white noise.
 
 The reproducible source is [`scripts/generate-audio.mjs`](../scripts/generate-audio.mjs). Run `npm run audio:generate` to recreate every file without a network connection or sample library. The generator uses fixed random seeds and contains the synthesis, arrangements, loop folding, and WAV encoder.
 
