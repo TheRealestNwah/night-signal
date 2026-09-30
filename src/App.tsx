@@ -68,7 +68,7 @@ export default function App() {
           <div className="scene-actions"><button onClick={() => setMotionPaused(!motionPaused)} aria-label={motionPaused ? 'Resume scene motion' : 'Pause scene motion'} title={motionPaused ? 'Resume scene motion' : 'Pause scene motion'}>{motionPaused ? <Play size={13}/> : <Pause size={13}/>}<span>{motionPaused ? 'Motion off' : 'Motion on'}</span></button><button onClick={() => setHidden(true)}><Eye size={14}/><span>Hide interface</span></button></div>
           <section className="player" aria-label="Soundscape player">
             <div className="track-art"><Radio size={23}/></div>
-            <div className="track-info"><span className="micro-label" role="status">{playing ? 'Now playing' : sound.status === 'loading' ? 'Tuning in' : sound.status === 'paused' ? 'Paused' : 'The sound of this scene'}</span><strong>{scene.soundscape}</strong><span>Night Signal originals <span className="track-dot">·</span> {scene.tag}</span></div>
+            <div className="track-info"><span className="micro-label" role="status">{playing ? 'Now playing' : sound.status === 'loading' ? 'Tuning in' : sound.status === 'paused' ? 'Paused' : ''}</span><strong>{scene.soundscape}</strong><span>Night Signal originals <span className="track-dot">·</span> {scene.tag}</span></div>
             <div className="transport">
               {started ? <button className="play-button" aria-label={playing ? 'Pause soundscape' : 'Play soundscape'} onClick={sound.toggle} disabled={sound.status === 'loading'}>{playing ? <Pause size={18} fill="currentColor"/> : <Play size={18} fill="currentColor"/>}</button>
                 : <button className="listen-button" onClick={sound.start}><Headphones size={17}/>{listenLabel}</button>}
