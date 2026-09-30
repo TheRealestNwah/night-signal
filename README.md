@@ -10,6 +10,7 @@ Each scene pairs an ASMR-style ambience with a music layer, and you set the bala
 | Midnight Highway | Road hum | Soft synth |
 | Empty Arcade | Machine hum | Chimes |
 | Night Train | Rails | Keys |
+| Snowed-In Cabin | Fire and wind | Felt piano |
 
 Night Signal is a static site: React and Vite, with the Web Audio API for playback. It has no server, accounts, database, tracking, paid APIs, or streaming services.
 

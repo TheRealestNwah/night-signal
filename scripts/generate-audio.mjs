@@ -103,6 +103,15 @@ function addBass(mix, start, note, length, strength) {
       * Math.min(1, age / 0.012) * Math.exp(-age / 0.8) * (1 - ease((age - length) / 0.2)));
 }
 
+/** Felt piano note: a soft hammer and quickly darkening overtones. */
+function addFelt(mix, start, note, length, strength) {
+  const frequency = midi(note);
+  addEvent(mix, start, length + 0.6, age => strength * Math.min(1, age / 0.012) * Math.exp(-age / 2.2) * (1 - ease((age - length) / 0.6))
+    * (Math.sin(twoPi * frequency * age) * 0.7 + Math.sin(twoPi * frequency * 1.0012 * age) * 0.3
+      + Math.sin(twoPi * frequency * 2 * age) * 0.35 * Math.exp(-age / 0.8)
+      + Math.sin(twoPi * frequency * 3 * age) * 0.12 * Math.exp(-age / 0.4)));
+}
+
 function addNoiseSwell(mix, start, length, random, cutoff, strength, envelope) {
   const filter = lowpass(cutoff);
   const smooth = lowpass(cutoff);
@@ -343,6 +352,64 @@ const layers = [
           addBass(mix, at(bar, 3), chord.bass + 7, 0.8 * beat, 0.07);
           // The melody sits out the first pass.
           if (cycle) for (const [position, note] of melody[bar % 4]) addKeys(mix, at(bar, position), cycle === 3 && bar % 4 === 3 ? note - 2 : note, 1.5 * beat, 0.03);
+        }
+      });
+    },
+  },
+  {
+    id: 'cabin-fire', seed: 725293, rms: 0.10,
+    build(random) {
+      return render(48, 6, (mix, frame) => {
+        // A low, steady fire and the wind heard through log walls.
+        const roar = lowpass(260), roarSmooth = lowpass(260), wind = lowpass(700), windSmooth = lowpass(700), windFloor = lowpass(200);
+        addBed(mix, frame, random, (white, t) => {
+          const band = windSmooth(wind(white));
+          const gust = 1 + 0.5 * drift(frame, t, 2, 0.4) + 0.25 * drift(frame, t, 5, 2.1);
+          return roarSmooth(roar(white)) * 1.1 * (1 + 0.1 * drift(frame, t, 7)) + (band - windFloor(band)) * 0.07 * gust;
+        });
+        // Sparse, soft crackle: short rounded ticks, never sharp clicks.
+        for (let count = Math.round(frame.seconds * 3); count > 0; count--) {
+          const frequency = random.between(1200, 2600);
+          const decay = random.between(0.002, 0.006);
+          const strength = 0.008 + 0.03 * random.between(0, 1) ** 4;
+          addEvent(mix, random.between(0, frame.seconds), decay * 8, age =>
+            Math.sin(twoPi * frequency * age) * Math.min(1, age / 0.001) * Math.exp(-age / decay) * (1 - ease(age / (decay * 8))) * strength);
+        }
+        for (let count = Math.round(frame.seconds * 0.25); count > 0; count--) {
+          const frequency = random.between(500, 900);
+          addEvent(mix, random.between(0, frame.seconds), 0.1, age =>
+            Math.sin(twoPi * frequency * age) * Math.min(1, age / 0.002) * Math.exp(-age / 0.015) * (1 - ease(age / 0.1)) * 0.04);
+        }
+        // Logs settling, twice.
+        for (const start of [17, 38]) {
+          addNoiseSwell(mix, start, 2, random, 150, 0.3, age => ease(age / 0.05) * Math.exp(-age / 0.3) * (1 - ease((age - 1.4) / 0.6)));
+        }
+      });
+    },
+  },
+  {
+    id: 'cabin-piano', seed: 810419, rms: 0.12, warmth: 2200,
+    build() {
+      const beat = 1;
+      const bars = 16;
+      const at = (bar, position) => (bar * 4 + position) * beat;
+      const chords = [
+        { notes: [50, 57, 61, 64, 66], bass: 38 }, // Dmaj9
+        { notes: [54, 57, 61, 62, 66], bass: 35 }, // Bm9
+        { notes: [47, 50, 54, 57, 59], bass: 43 }, // Gmaj9
+        { notes: [52, 57, 59, 61, 64], bass: 45 }, // A6sus2
+      ];
+      const melody = [[[0, 74], [2, 73]], [[0, 71], [3, 69]], [[0, 71], [2, 74]], [[0, 73]]];
+      return render(bars * 4 * beat, 6, mix => {
+        for (let bar = 0; bar < bars; bar++) {
+          const chord = chords[bar % 4];
+          const cycle = Math.floor(bar / 4);
+          addFelt(mix, at(bar, 0), chord.bass, 3.5, 0.10);
+          // A slow arpeggio up and back down the chord.
+          for (const [eighth, voice] of [0, 1, 2, 3, 4, 3, 2, 1].entries()) {
+            addFelt(mix, at(bar, eighth / 2), chord.notes[voice], 1.4, eighth % 2 ? 0.022 : 0.03);
+          }
+          if (cycle === 1 || cycle === 2) for (const [position, note] of melody[bar % 4]) addFelt(mix, at(bar, position), note, 1.8, 0.05);
         }
       });
     },
