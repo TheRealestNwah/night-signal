@@ -15,7 +15,7 @@ Each scene pairs an ASMR-style ambience with a music layer, and you set the bala
 
 Night Signal is a static site: React and Vite, with the Web Audio API for playback. It has no server, accounts, database, tracking, paid APIs, or streaming services.
 
-All audio is **original and procedurally synthesized** by a script in this repository; none of it is sampled or third-party music. Scene artwork is original SVG/CSS, with system fonts and Lucide interface icons. See the [asset and source register](docs/ASSETS.md) for provenance and replacement instructions.
+Most audio is **original and procedurally synthesized** by a script in this repository. The Night Train ambience is a licensed Pixabay recording; it and any other recordings are listed in the asset register and are not covered by the MIT license. Scene artwork is original SVG/CSS, with system fonts and Lucide interface icons. See the [asset and source register](docs/ASSETS.md) for provenance and replacement instructions.
 
 > **Built with AI.** Night Signal's code, tests and documentation were written by
 > Claude, an AI model from Anthropic, directed and tested by the maintainer.
@@ -86,4 +86,4 @@ never expected.
 
 ## License
 
-MIT — see [LICENSE](LICENSE).
+MIT — see [LICENSE](LICENSE). Licensed third-party recordings in `public/audio/` keep their own licenses; see [docs/ASSETS.md](docs/ASSETS.md#licensed-recordings).

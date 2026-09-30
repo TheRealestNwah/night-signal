@@ -2,6 +2,7 @@
  * Night Signal soundscape layers.
  * Original procedural synthesis: no recordings, samples, or external assets.
  * Run `npm run audio:generate` to reproduce the checked-in looping PCM WAVs.
+ * Layers made from licensed recordings (see docs/ASSETS.md) are not generated here.
  *
  * Every layer is rendered slightly past its loop length, then the overhang is
  * folded back onto the beginning, so decays and noise beds wrap seamlessly.
@@ -324,35 +325,6 @@ const layers = [
           addBell(mix, index * 3.75 + 0.8, note, 0.55);
           addBell(mix, index * 3.75 + 1.18, note - 12, 0.15);
         }
-      });
-    },
-  },
-  {
-    id: 'train-rails', seed: 192161, rms: 0.10,
-    build(random) {
-      return render(48, 6, (mix, frame) => {
-        // The running gear: a low traction hum and the soft singing of wheels on steel, both tonal rather than windy.
-        addEvent(mix, 0, frame.seconds, age => (Math.sin(twoPi * 45 * age) + Math.sin(twoPi * 90 * age) * 0.5 + Math.sin(twoPi * 135 * age) * 0.25) * 0.018 * (1 + 0.1 * drift(frame, age, 4))
-          + (Math.sin(twoPi * 620 * age) + Math.sin(twoPi * 930 * age) * 0.5) * 0.0025 * (1 + 0.5 * drift(frame, age, 3, 0.6)));
-        // Wheels over rail joints: two bogies of two axles, once per carriage length, each with a faint ring of steel.
-        for (let start = 0.3; start < frame.seconds; start += 1.6) {
-          for (const [offset, strength] of [[0, 0.11], [0.13, 0.085], [0.62, 0.1], [0.75, 0.07]]) {
-            addEvent(mix, start + offset, 0.4, age => ((Math.sin(twoPi * 92 * age) + Math.sin(twoPi * 184 * age) * 0.3) * Math.exp(-age / 0.05)
-              + (Math.sin(twoPi * 1180 * age) + Math.sin(twoPi * 1730 * age) * 0.6) * 0.08 * Math.exp(-age / 0.03))
-              * Math.min(1, age / 0.002) * (1 - ease(age / 0.4)) * strength);
-            addNoiseSwell(mix, start + offset, 0.15, random, 1400, strength * 0.5, age => Math.min(1, age / 0.002) * Math.exp(-age / 0.02) * (1 - ease(age / 0.15)));
-          }
-        }
-        // The carriage creaks as it sways.
-        for (const start of [5.1, 16.8, 27.4, 40.2]) {
-          const from = random.between(190, 230);
-          addEvent(mix, start, 0.7, age => Math.sin(twoPi * from * (age - 0.15 * age * age)) * (0.5 + 0.5 * Math.sin(twoPi * 38 * age))
-            * ease(age / 0.1) * (1 - ease((age - 0.4) / 0.3)) * 0.03);
-        }
-        // A horn, once, far down the line.
-        addEvent(mix, 29, 5, age => (Math.sin(twoPi * midi(63) * age) + Math.sin(twoPi * midi(66) * age)
-          + (Math.sin(twoPi * midi(63) * 2 * age) + Math.sin(twoPi * midi(66) * 2 * age)) * 0.25)
-          * ease(age / 0.6) * (1 - ease((age - 3.4) / 1.4)) * 0.012);
       });
     },
   },
