@@ -65,7 +65,7 @@ export default function App() {
           <button className="primary-button" onClick={listen} disabled={sound.status === 'loading'}>{listenLabel}{playing ? <Pause size={16}/> : <Headphones size={17}/>}</button>
         </div>
         <div className="room-dock interface">
-          <div className="scene-meta"><span className="scene-coordinate">{scene.coordinate}</span><div className="scene-actions"><button onClick={() => setMotionPaused(!motionPaused)} aria-label={motionPaused ? 'Resume scene motion' : 'Pause scene motion'} title={motionPaused ? 'Resume scene motion' : 'Pause scene motion'}>{motionPaused ? <Play size={13}/> : <Pause size={13}/>}<span>{motionPaused ? 'Motion off' : 'Motion on'}</span></button><button onClick={() => setHidden(true)}><Eye size={14}/><span>Hide interface</span></button></div></div>
+          <div className="scene-actions"><button onClick={() => setMotionPaused(!motionPaused)} aria-label={motionPaused ? 'Resume scene motion' : 'Pause scene motion'} title={motionPaused ? 'Resume scene motion' : 'Pause scene motion'}>{motionPaused ? <Play size={13}/> : <Pause size={13}/>}<span>{motionPaused ? 'Motion off' : 'Motion on'}</span></button><button onClick={() => setHidden(true)}><Eye size={14}/><span>Hide interface</span></button></div>
           <section className="player" aria-label="Soundscape player">
             <div className="track-art"><Radio size={23}/></div>
             <div className="track-info"><span className="micro-label" role="status">{playing ? 'Now playing' : sound.status === 'loading' ? 'Tuning in' : sound.status === 'paused' ? 'Paused' : 'The sound of this scene'}</span><strong>{scene.soundscape}</strong><span>Night Signal originals <span className="track-dot">·</span> {scene.tag}</span></div>
@@ -80,8 +80,7 @@ export default function App() {
         </div>
       </section>
 
-      <section id="environments" className="environments interface" aria-labelledby="environments-heading">
-        <h2 id="environments-heading">Find your kind of quiet.</h2>
+      <section id="environments" className="environments interface" aria-label="Scenes">
         <div className="environment-grid">{SCENES.map((item, index) => <button key={item.id} className={`environment-card theme-${item.id} ${scene.id === item.id ? 'selected' : ''}`} onClick={() => chooseScene(item.id)} aria-pressed={scene.id === item.id}>
           <div className="environment-image"><Scene scene={item.id} miniature/><span className="room-number">0{index + 1}</span>{scene.id === item.id && <span className="selected-label"><span className="status-dot"/>You are here</span>}</div>
           <div className="environment-caption"><div><h3>{item.name}</h3><p>{item.description}</p></div><ArrowUpRight size={18}/></div><div className="environment-tag">{item.tag}</div>
