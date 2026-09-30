@@ -14,6 +14,10 @@ Night Signal is a static site: React and Vite, with the Web Audio API for playba
 
 All audio is **original and procedurally synthesized** by a script in this repository; none of it is sampled or third-party music. Scene artwork is original SVG/CSS, with system fonts and Lucide interface icons. See the [asset and source register](docs/ASSETS.md) for provenance and replacement instructions.
 
+> **Built with AI.** Night Signal's code, tests and documentation were written by
+> Claude, an AI model from Anthropic, directed and tested by the maintainer.
+> See [AI disclosure](#ai-disclosure).
+
 ## Run locally
 
 Use Node.js **24.15 or newer within the Node 24 release line** and npm. CI pins Node 24.20.0.
@@ -60,3 +64,19 @@ npm run audio:generate
 ```
 
 The generator uses fixed random seeds, so the output is identical on every run.
+
+## AI disclosure
+
+Night Signal was built with [Claude Code](https://claude.com/claude-code), Anthropic's
+AI coding assistant. Claude wrote the code, tests and documentation. The
+maintainer ([@TheRealestNwah](https://github.com/TheRealestNwah)) decided what
+it should do, tested it, and made the release decisions. Commits written with
+Claude carry a `Co-Authored-By: Claude` trailer, so the git history shows which
+changes were AI-written.
+
+## Support
+
+Everything on my GitHub is free of charge and open source. If you find it
+useful and want to leave a tip or buy me a coffee, you can do that at
+[ko-fi.com/morrowheat23](https://ko-fi.com/morrowheat23). It's appreciated,
+never expected.
