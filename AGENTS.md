@@ -6,7 +6,7 @@ A static site of calming illustrated scenes, each with looping ambience and musi
 
 - Node 24.15+ within the Node 24 release line. `npm ci`, then `npm run dev` starts Vite at http://127.0.0.1:3000.
 - `npm run check` runs typecheck, lint, unit tests, and the production build. `npm run test:e2e` runs Playwright (desktop and phone) against `vite preview` on port 4173; it needs `npx playwright install chromium` once.
-- Layout: `src/scenes.ts` is the scene and layer catalog, `src/useSoundscape.ts` is Web Audio playback, `src/mix.ts` is level math and saved preferences, `src/Scene.tsx` and `src/OtherScenes.tsx` are artwork, `src/App.tsx` is the interface.
+- Layout: `src/scenes.ts` is the scene and layer catalog, `src/useSoundscape.ts` is Web Audio playback, `src/mix.ts` is level math and saved preferences, `src/Scene.tsx`, `src/OtherScenes.tsx`, and `src/*Art.tsx` (one file per newer scene) are artwork, `src/App.tsx` is the interface.
 - Keep audio playback separate from scene rendering. A new scene is artwork plus a catalog entry and its layers; it should not change the player.
 - Audio requires an explicit user gesture. No audio may be fetched or played before it. Volume, mute, and layer levels are local preferences.
 - Every layer must loop seamlessly. `scripts/generate-audio.mjs` renders past the loop length and folds the overhang back; `tests/catalog.test.ts` checks the seam, headroom, and format. Run `npm run audio:generate` and commit the WAVs whenever the generator changes.

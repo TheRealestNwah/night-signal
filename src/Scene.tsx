@@ -1,5 +1,6 @@
 import type { SceneId } from './scenes';
 import { ArcadeArt, HighwayArt } from './OtherScenes';
+import { TrainArt } from './TrainArt';
 
 const buildings = [
   [410, 258, 66, 350], [485, 188, 82, 420], [575, 286, 44, 320], [630, 217, 104, 390],
@@ -58,7 +59,6 @@ export function ApartmentArt({ miniature = false }: { miniature?: boolean }) {
 }
 
 export function Scene({ scene, miniature = false }: { scene: SceneId; miniature?: boolean }) {
-  if (scene === 'apartment') return <ApartmentArt miniature={miniature}/>;
-  if (scene === 'highway') return <HighwayArt miniature={miniature}/>;
-  return <ArcadeArt miniature={miniature}/>;
+  const Art = { apartment: ApartmentArt, highway: HighwayArt, arcade: ArcadeArt, train: TrainArt }[scene];
+  return <Art miniature={miniature}/>;
 }

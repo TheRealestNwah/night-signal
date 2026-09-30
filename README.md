@@ -9,6 +9,7 @@ Each scene pairs an ASMR-style ambience with a music layer, and you set the bala
 | Rainy Apartment | Rain on the window | Lofi |
 | Midnight Highway | Road hum | Soft synth |
 | Empty Arcade | Machine hum | Chimes |
+| Night Train | Rails | Keys |
 
 Night Signal is a static site: React and Vite, with the Web Audio API for playback. It has no server, accounts, database, tracking, paid APIs, or streaming services.
 
@@ -42,7 +43,7 @@ The `dist/` folder is the whole site. Upload it to any static host (GitHub Pages
 - `src/scenes.ts` is the catalog: each scene's text and its audio layers.
 - `src/useSoundscape.ts` loads a scene's layers, loops them, and crossfades between scenes.
 - `src/mix.ts` holds the level math and saved preferences.
-- `src/Scene.tsx` and `src/OtherScenes.tsx` draw the scenes; `src/App.tsx` is the interface.
+- `src/Scene.tsx`, `src/OtherScenes.tsx`, and one `src/*Art.tsx` file per newer scene draw the scenes; `src/App.tsx` is the interface.
 - `public/audio/` contains the looping layers; `scripts/generate-audio.mjs` reproduces them without external samples or dependencies.
 
 Adding a scene means adding its artwork, its layers in the generator, and one catalog entry. The player does not change.

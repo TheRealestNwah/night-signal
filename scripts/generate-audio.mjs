@@ -85,6 +85,24 @@ function addBell(mix, start, note, strength) {
       + Math.sin(twoPi * frequency * 3 * age) * 0.006));
 }
 
+/** Electric-piano note: a sine body with a fading bell-like overtone and gentle tremolo. */
+function addKeys(mix, start, note, length, strength) {
+  const frequency = midi(note);
+  addEvent(mix, start, length + 0.4, age => {
+    const envelope = Math.min(1, age / 0.008) * Math.exp(-age / 1.7) * (1 - ease((age - length) / 0.4));
+    return strength * envelope * (1 + 0.07 * Math.sin(twoPi * 4.3 * age)) * (Math.sin(twoPi * frequency * age)
+      + Math.sin(twoPi * frequency * 2 * age) * 0.32 * Math.exp(-age / 0.5)
+      + Math.sin(twoPi * frequency * 5 * age) * 0.10 * Math.exp(-age / 0.09));
+  });
+}
+
+function addBass(mix, start, note, length, strength) {
+  const frequency = midi(note);
+  addEvent(mix, start, length + 0.2, age =>
+    (Math.sin(twoPi * frequency * age) + Math.sin(twoPi * frequency * 2 * age) * 0.18) * strength
+      * Math.min(1, age / 0.012) * Math.exp(-age / 0.8) * (1 - ease((age - length) / 0.2)));
+}
+
 function addNoiseSwell(mix, start, length, random, cutoff, strength, envelope) {
   const filter = lowpass(cutoff);
   const smooth = lowpass(cutoff);
@@ -147,30 +165,16 @@ const layers = [
         [[1, 67], [1.5, 76], [3.5, 74]],
         [[0, 72]],
       ];
-      const keys = (mix, start, note, length, strength) => {
-        const frequency = midi(note);
-        addEvent(mix, start, length + 0.4, age => {
-          const envelope = Math.min(1, age / 0.008) * Math.exp(-age / 1.7) * (1 - ease((age - length) / 0.4));
-          return strength * envelope * (1 + 0.07 * Math.sin(twoPi * 4.3 * age)) * (Math.sin(twoPi * frequency * age)
-            + Math.sin(twoPi * frequency * 2 * age) * 0.32 * Math.exp(-age / 0.5)
-            + Math.sin(twoPi * frequency * 5 * age) * 0.10 * Math.exp(-age / 0.09));
-        });
-      };
       return render(bars * 4 * beat, 4, (mix, frame) => {
         for (let bar = 0; bar < bars; bar++) {
           const chord = chords[bar % 4];
           const cycle = Math.floor(bar / 4);
           // Electric-piano chord, lightly strummed, with a softer answer.
           for (const [voice, note] of chord.keys.entries()) {
-            keys(mix, at(bar, 0) + voice * 0.014, note, 3.1 * beat, 0.05);
-            keys(mix, at(bar, 2.5) + voice * 0.01, note, 1.2 * beat, 0.026);
+            addKeys(mix, at(bar, 0) + voice * 0.014, note, 3.1 * beat, 0.05);
+            addKeys(mix, at(bar, 2.5) + voice * 0.01, note, 1.2 * beat, 0.026);
           }
-          const bass = midi(chord.bass);
-          for (const [position, length, strength] of [[0, 1.5, 0.17], [2.5, 0.8, 0.11]]) {
-            addEvent(mix, at(bar, position), length * beat + 0.2, age =>
-              (Math.sin(twoPi * bass * age) + Math.sin(twoPi * bass * 2 * age) * 0.18) * strength
-                * Math.min(1, age / 0.012) * Math.exp(-age / 0.8) * (1 - ease((age - length * beat) / 0.2)));
-          }
+          for (const [position, length, strength] of [[0, 1.5, 0.17], [2.5, 0.8, 0.11]]) addBass(mix, at(bar, position), chord.bass, length * beat, strength);
           // Soft kick, brushed snare, and barely-there hats.
           for (const position of bar % 4 === 3 ? [0, 2, 3.5] : [0, 2]) {
             addEvent(mix, at(bar, position), 0.6, age =>
@@ -283,6 +287,62 @@ const layers = [
         for (const [index, note] of notes.entries()) {
           addBell(mix, index * 3.75 + 0.8, note, 0.55);
           addBell(mix, index * 3.75 + 1.18, note - 12, 0.15);
+        }
+      });
+    },
+  },
+  {
+    id: 'train-rails', seed: 192161, rms: 0.10,
+    build(random) {
+      return render(48, 6, (mix, frame) => {
+        // Carriage rumble with a soft band of wheel noise, swaying slowly.
+        const rumble = lowpass(120), rumbleSmooth = lowpass(120), wheel = lowpass(600), wheelFloor = lowpass(180);
+        addBed(mix, frame, random, (white, t) => {
+          const band = wheel(white);
+          return rumbleSmooth(rumble(white)) * 1.4 * (1 + 0.12 * drift(frame, t, 4))
+            + (band - wheelFloor(band)) * 0.08 * (1 + 0.2 * drift(frame, t, 6, 0.5));
+        });
+        // Wheels over rail joints: two bogies of two axles, once per carriage length.
+        for (let start = 0.3; start < frame.seconds; start += 1.6) {
+          for (const [offset, strength] of [[0, 0.09], [0.13, 0.07], [0.62, 0.08], [0.75, 0.06]]) {
+            addEvent(mix, start + offset, 0.4, age => (Math.sin(twoPi * 92 * age) + Math.sin(twoPi * 184 * age) * 0.2)
+              * Math.min(1, age / 0.003) * Math.exp(-age / 0.05) * (1 - ease(age / 0.4)) * strength);
+            addNoiseSwell(mix, start + offset, 0.15, random, 1400, strength * 0.5, age => Math.min(1, age / 0.002) * Math.exp(-age / 0.02) * (1 - ease(age / 0.15)));
+          }
+        }
+        // A horn, once, far down the line.
+        addEvent(mix, 29, 5, age => (Math.sin(twoPi * midi(63) * age) + Math.sin(twoPi * midi(66) * age)
+          + (Math.sin(twoPi * midi(63) * 2 * age) + Math.sin(twoPi * midi(66) * 2 * age)) * 0.25)
+          * ease(age / 0.6) * (1 - ease((age - 3.4) / 1.4)) * 0.012);
+      });
+    },
+  },
+  {
+    id: 'train-keys', seed: 502133, rms: 0.12, warmth: 2800,
+    build() {
+      const beat = 60 / 64;
+      const bars = 16;
+      const at = (bar, position) => (bar * 4 + position) * beat;
+      const chords = [
+        { keys: [57, 60, 64, 67], bass: 41 }, // Fmaj9
+        { keys: [55, 59, 62, 64], bass: 40 }, // Em7
+        { keys: [53, 57, 60, 64], bass: 38 }, // Dm9
+        { keys: [53, 57, 59, 64], bass: 43 }, // G13
+      ];
+      const melody = [[[2, 72], [3, 71]], [[0, 67], [2.5, 69]], [[1, 72], [2, 74]], [[0.5, 71], [2, 67]]];
+      return render(bars * 4 * beat, 5, mix => {
+        for (let bar = 0; bar < bars; bar++) {
+          const chord = chords[bar % 4];
+          const cycle = Math.floor(bar / 4);
+          // Slow, rolled Rhodes chords; every other pass answers on beat three.
+          for (const [voice, note] of chord.keys.entries()) {
+            addKeys(mix, at(bar, 0) + voice * 0.02, note, 3.4 * beat, 0.045);
+            if (cycle % 2) addKeys(mix, at(bar, 2) + voice * 0.015, note, 1.6 * beat, 0.02);
+          }
+          addBass(mix, at(bar, 0), chord.bass, 2.5 * beat, 0.15);
+          addBass(mix, at(bar, 3), chord.bass + 7, 0.8 * beat, 0.07);
+          // The melody sits out the first pass.
+          if (cycle) for (const [position, note] of melody[bar % 4]) addKeys(mix, at(bar, position), cycle === 3 && bar % 4 === 3 ? note - 2 : note, 1.5 * beat, 0.03);
         }
       });
     },
