@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { clampLevel, defaultLevels, gainFor, parseLevels } from '../src/mix';
+import { SCENES } from '../src/scenes';
 
 describe('mixer levels', () => {
   it('clamps levels into range and rejects non-numbers', () => {
@@ -20,8 +21,7 @@ describe('mixer levels', () => {
 describe('saved mixes', () => {
   it('starts from the catalog defaults', () => {
     expect(parseLevels(null)).toEqual(defaultLevels());
-    expect(defaultLevels()['apartment-rain']).toBe(0.25);
-    expect(defaultLevels()['apartment-lofi']).toBe(0.5);
+    for (const layer of SCENES.flatMap(scene => scene.layers)) expect(layer.defaultLevel).toBe(layer.kind === 'ambience' ? 0.25 : 0.5);
   });
   it('restores saved levels and ignores unknown layers and bad values', () => {
     const levels = parseLevels(JSON.stringify({ 'apartment-rain': 0.2, 'apartment-lofi': 'loud', 'retired-layer': 1 }));
