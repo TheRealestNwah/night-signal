@@ -12,8 +12,8 @@ export const SCENES: SceneInfo[] = [
     id: 'apartment', name: 'Rainy Apartment', soundscape: 'Windowlight', description: 'The city can wait.', tag: 'Rain on glass / lofi',
     lines: ['Rain on the windows.', 'A little warmth, and nowhere to be.'], coordinate: '40°43′ N · A window somewhere',
     layers: [
-      { id: 'apartment-rain', kind: 'ambience', label: 'Rain on the window', url: '/audio/apartment-rain.wav', defaultLevel: 0.8 },
-      { id: 'apartment-lofi', kind: 'music', label: 'Lofi', url: '/audio/apartment-lofi.wav', defaultLevel: 0.6 },
+      { id: 'apartment-rain', kind: 'ambience', label: 'Rain on the window', url: '/audio/apartment-rain.wav', defaultLevel: 0.25 },
+      { id: 'apartment-lofi', kind: 'music', label: 'Lofi', url: '/audio/apartment-lofi.wav', defaultLevel: 0.5 },
     ],
   },
   {
