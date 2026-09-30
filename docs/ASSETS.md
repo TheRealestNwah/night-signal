@@ -18,6 +18,8 @@ These are procedural soundscape layers, created by the coding assistant for Nigh
 | `public/audio/train-keys.wav` | Night Train | Keys | 60.00 s | Original 16-bar piece at 64 BPM: electric-piano chords, sine bass, sparse melody |
 | `public/audio/cabin-fire.wav` | Snowed-In Cabin | Fire and wind | 48.00 s | Low-passed fire bed, muffled gusting wind, sparse soft crackle, two logs settling |
 | `public/audio/cabin-piano.wav` | Snowed-In Cabin | Felt piano | 64.00 s | Original 16-bar piece at 60 BPM: soft-hammered piano arpeggios, low bass notes, a sparse melody |
+| `public/audio/lighthouse-waves.wav` | Lighthouse Keeper | Waves | 48.00 s | Low sea swell, light wind, six low-passed wave washes with soft foam tails |
+| `public/audio/lighthouse-drone.wav` | Lighthouse Keeper | Drone and bell | 60.00 s | Original sine drone locked to the loop, slow pads, a sparse bell phrase, and a distant buoy bell |
 
 All files are mono PCM WAVs at 22,050 Hz and 16-bit depth, about 2–2.6 MB each. Each is a seamless loop: the generator renders past the loop length and folds the overhang back onto the start, so decays and noise beds wrap without a click. Layers are loudness-matched by RMS with peaks kept below -1 dBFS. The rain and other noise beds are low-pass filtered; no layer contains raw white noise.
 
@@ -25,7 +27,7 @@ The reproducible source is [`scripts/generate-audio.mjs`](../scripts/generate-au
 
 ## Artwork and typography
 
-The Rainy Apartment, Midnight Highway, Empty Arcade, Night Train, and Snowed-In Cabin illustrations and animations are original SVG/CSS artwork authored by the coding assistant for this project. There are no incorporated third-party image assets. Typography uses system fonts installed on the visitor's device; no fonts are downloaded or redistributed.
+The Rainy Apartment, Midnight Highway, Empty Arcade, Night Train, Snowed-In Cabin, and Lighthouse Keeper illustrations and animations are original SVG/CSS artwork authored by the coding assistant for this project. There are no incorporated third-party image assets. Typography uses system fonts installed on the visitor's device; no fonts are downloaded or redistributed.
 
 Interface icons come from the `lucide-react` package under the ISC license, with some Feather-derived icons under the MIT license. Both notices are included below and in the installed dependency's `LICENSE` file. The artwork attribution above does not describe these library icons as original project artwork.
 
