@@ -112,6 +112,18 @@ function addFelt(mix, start, note, length, strength) {
       + Math.sin(twoPi * frequency * 3 * age) * 0.12 * Math.exp(-age / 0.4)));
 }
 
+/** Two-pole band-pass whose centre can move every sample: tuned, ringing or whistling noise. */
+function resonator(q) {
+  let x1 = 0, x2 = 0, y1 = 0, y2 = 0;
+  return (input, frequency) => {
+    const w = twoPi * frequency / sampleRate;
+    const alpha = Math.sin(w) / (2 * q);
+    const y = (alpha * input - alpha * x2 + 2 * Math.cos(w) * y1 - (1 - alpha) * y2) / (1 + alpha);
+    x2 = x1; x1 = input; y2 = y1; y1 = y;
+    return y;
+  };
+}
+
 function addNoiseSwell(mix, start, length, random, cutoff, strength, envelope) {
   const filter = lowpass(cutoff);
   const smooth = lowpass(cutoff);
@@ -120,38 +132,46 @@ function addNoiseSwell(mix, start, length, random, cutoff, strength, envelope) {
 
 const layers = [
   {
-    id: 'apartment-rain', seed: 104729, rms: 0.10,
+    id: 'apartment-rain', seed: 104729, rms: 0.10, warmth: 4500,
     build(random) {
       return render(48, 10, (mix, frame) => {
-        // Rain heard through glass: a muffled wash, never raw white noise.
-        const body = lowpass(1500), bodySmooth = lowpass(2600), bodyFloor = lowpass(220), far = lowpass(380);
-        addBed(mix, frame, random, (white, t) => {
-          const band = bodySmooth(body(white));
-          const swell = 1 + 0.12 * drift(frame, t, 2) + 0.06 * drift(frame, t, 5, 1.3);
-          return ((band - bodyFloor(band)) * 0.11 + far(white) * 0.16) * swell;
-        });
-        // Individual drops ticking on the window.
-        for (let count = Math.round(frame.seconds * 14); count > 0; count--) {
-          const frequency = 1700 + 3400 * random.between(0, 1) ** 2;
+        // A light wash of rain on glass, kept well behind the drops themselves.
+        const wash = resonator(0.7);
+        addBed(mix, frame, random, (white, t) => wash(white, 1400) * 0.035 * (1 + 0.15 * drift(frame, t, 2)));
+        // Patter: a dense cloud of tiny, soft drops.
+        for (let count = Math.round(frame.seconds * 260); count > 0; count--) {
+          const frequency = random.between(700, 2200);
+          const decay = random.between(0.0015, 0.004);
+          const strength = 0.01 + 0.03 * random.between(0, 1) ** 3;
+          addEvent(mix, random.between(0, frame.seconds), decay * 6, age =>
+            Math.sin(twoPi * frequency * age) * Math.min(1, age / 0.0006) * Math.exp(-age / decay) * (1 - ease(age / (decay * 6))) * strength);
+        }
+        // Bigger drops landing on the glass.
+        for (let count = Math.round(frame.seconds * 12); count > 0; count--) {
+          const frequency = 1200 + 1800 * random.between(0, 1) ** 2;
           const decay = random.between(0.004, 0.012);
-          const strength = 0.025 + 0.085 * random.between(0, 1) ** 3;
+          const strength = 0.03 + 0.09 * random.between(0, 1) ** 3;
           addEvent(mix, random.between(0, frame.seconds), decay * 7, age =>
-            Math.sin(twoPi * frequency * age) * Math.exp(-age / decay) * (1 - ease(age / (decay * 7))) * strength);
+            Math.sin(twoPi * frequency * age) * Math.min(1, age / 0.0008) * Math.exp(-age / decay) * (1 - ease(age / (decay * 7))) * strength);
         }
         // Heavier drips from the sill, each with a small downward chirp.
-        for (let count = Math.round(frame.seconds * 0.7); count > 0; count--) {
+        for (let count = Math.round(frame.seconds * 1.1); count > 0; count--) {
           const frequency = random.between(480, 1050);
           const decay = random.between(0.03, 0.06);
-          const strength = random.between(0.05, 0.11);
+          const strength = random.between(0.04, 0.09);
           addEvent(mix, random.between(0, frame.seconds), decay * 6, age => {
             const phase = twoPi * frequency * (age + 0.4 * 0.012 * (1 - Math.exp(-age / 0.012)));
             return Math.sin(phase) * Math.min(1, age / 0.002) * Math.exp(-age / decay) * (1 - ease(age / (decay * 6))) * strength;
           });
         }
-        // Two far-off rolls of thunder, more felt than heard.
-        for (const start of [11, 33]) {
-          addNoiseSwell(mix, start, 9, random, 95, 0.55, age => ease(age / 1.6) * Math.exp(-age / 2.6) * (1 - ease((age - 6) / 3)));
+        // Water running down the drainpipe: small bubbling notes that rise as they pop.
+        for (let count = Math.round(frame.seconds * 7); count > 0; count--) {
+          const frequency = random.between(380, 760);
+          addEvent(mix, random.between(0, frame.seconds), 0.08, age =>
+            Math.sin(twoPi * frequency * (age + 3 * age * age)) * Math.min(1, age / 0.004) * Math.exp(-age / 0.02) * (1 - ease(age / 0.08)) * 0.035);
         }
+        // One far-off roll of thunder, more felt than heard.
+        addNoiseSwell(mix, 30, 9, random, 95, 0.3, age => ease(age / 1.6) * Math.exp(-age / 2.6) * (1 - ease((age - 6) / 3)));
       });
     },
   },
@@ -224,24 +244,31 @@ const layers = [
     id: 'highway-road', seed: 130363, rms: 0.10,
     build(random) {
       return render(48, 8, (mix, frame) => {
-        // Cabin rumble with a quieter band of tyre noise above it.
-        const rumble = lowpass(150), rumbleSmooth = lowpass(150), tyre = lowpass(750), tyreFloor = lowpass(220);
-        addBed(mix, frame, random, (white, t) => {
-          const band = tyre(white);
-          return rumbleSmooth(rumble(white)) * 1.5 * (1 + 0.10 * drift(frame, t, 3))
-            + (band - tyreFloor(band)) * 0.10 * (1 + 0.15 * drift(frame, t, 4, 0.8));
+        // Road noise, kept low under the engine.
+        const rumble = lowpass(150), rumbleSmooth = lowpass(150), tyre = resonator(0.8);
+        addBed(mix, frame, random, (white, t) => rumbleSmooth(rumble(white)) * 0.2 * (1 + 0.1 * drift(frame, t, 3))
+          + tyre(white, 520) * 0.03 * (1 + 0.2 * drift(frame, t, 4, 0.8)));
+        // Engine: a steady note that rises and settles with the road. 48 Hz and its harmonics complete whole cycles per loop.
+        addEvent(mix, 0, frame.seconds, age => {
+          const phase = twoPi * (48 * age + 1.5 * frame.seconds / twoPi / 2 * (1 - Math.cos(twoPi * 2 * age / frame.seconds)));
+          let value = 0;
+          for (const [harmonic, level] of [[1, 1], [2, 0.55], [3, 0.35], [4, 0.2], [5, 0.1]]) value += Math.sin(harmonic * phase) * level;
+          return value * (1 + 0.12 * Math.sin(phase / 2)) * 0.03;
         });
-        // Engine drone: whole-number frequencies repeat exactly within the loop.
-        addEvent(mix, 0, frame.seconds, age => (Math.sin(twoPi * 55 * age) * 0.030 + Math.sin(twoPi * 110 * age) * 0.011) * (1 + 0.2 * drift(frame, age, 2, 2)));
         // Expansion joints: a paired soft thump every six seconds.
         for (let start = 2; start < frame.seconds; start += 6) {
           for (const offset of [0, 0.17]) {
-            addEvent(mix, start + offset, 0.5, age => Math.sin(twoPi * 68 * age) * Math.min(1, age / 0.004) * Math.exp(-age / 0.07) * (1 - ease(age / 0.5)) * 0.10);
+            addEvent(mix, start + offset, 0.5, age => Math.sin(twoPi * 68 * age) * Math.min(1, age / 0.004) * Math.exp(-age / 0.07) * (1 - ease(age / 0.5)) * 0.1);
           }
         }
-        // Traffic passing on the far side.
+        // Cars passing the other way: a whoosh that falls in pitch, with their engine gliding down underneath.
         for (const start of [14, 37]) {
-          addNoiseSwell(mix, start, 7, random, 900, 0.14, age => Math.exp(-(((age - 3.5) / 1.3) ** 2)) * ease(age / 1) * (1 - ease((age - 6) / 1)));
+          const whoosh = resonator(1.4);
+          addEvent(mix, start, 6, age => {
+            const envelope = Math.exp(-(((age - 3) / 1.1) ** 2)) * ease(age / 0.8) * (1 - ease((age - 5) / 1));
+            const pitch = 1 + 0.06 * Math.tanh((3 - age) * 1.5);
+            return (whoosh(random(), 900 * pitch) * 0.3 + Math.sin(twoPi * 110 * pitch * age) * 0.04) * envelope;
+          });
         }
       });
     },
@@ -265,21 +292,29 @@ const layers = [
     id: 'arcade-hum', seed: 155921, rms: 0.08,
     build(random) {
       return render(48, 6, (mix, frame) => {
-        // Ventilation and the electrical hum of machines left on overnight.
-        const air = lowpass(520), airSmooth = lowpass(900), airFloor = lowpass(90);
-        addBed(mix, frame, random, (white, t) => {
-          const band = airSmooth(air(white));
-          return (band - airFloor(band)) * 0.13 * (1 + 0.08 * drift(frame, t, 3));
-        });
-        addEvent(mix, 0, frame.seconds, age => Math.sin(twoPi * 60 * age) * 0.020 + Math.sin(twoPi * 120 * age) * 0.011 + Math.sin(twoPi * 180 * age) * 0.004);
-        // A cabinet somewhere across the room runs its attract mode.
-        for (let start = random.between(2, 5); start < frame.seconds - 1; start += random.between(4, 9)) {
-          const root = 72 + Math.round(random.between(0, 7));
+        // A little ventilation air, well under the machines.
+        const air = resonator(0.6);
+        addBed(mix, frame, random, (white, t) => air(white, 700) * 0.025 * (1 + 0.1 * drift(frame, t, 3)));
+        // Mains hum from the cabinets, and a ceiling fan's slow beat.
+        addEvent(mix, 0, frame.seconds, age => Math.sin(twoPi * 60 * age) * 0.020 + Math.sin(twoPi * 120 * age) * 0.011 + Math.sin(twoPi * 180 * age) * 0.004
+          + Math.sin(twoPi * 90 * age) * (1 + 0.6 * Math.sin(twoPi * 7 * age)) * 0.009);
+        // Cabinets around the room run their attract modes.
+        for (let start = random.between(1, 3); start < frame.seconds - 1; start += random.between(2.5, 6)) {
+          const root = 67 + Math.round(random.between(0, 10));
+          const shape = [[0, 4, 7, 12], [0, 3, 7, 10], [12, 7, 4, 0], [0, 7, 12, 7]][Math.floor(random.between(0, 3.99))];
           const steps = 2 + Math.round(random.between(0, 2));
+          const strength = random.between(0.012, 0.022);
           for (let step = 0; step < steps; step++) {
-            const frequency = midi(root + [0, 4, 7, 12][step]);
+            const frequency = midi(root + shape[step]);
             addEvent(mix, start + step * 0.13, 0.5, age =>
-              Math.sin(twoPi * frequency * age) * Math.min(1, age / 0.006) * Math.exp(-age / 0.11) * (1 - ease(age / 0.5)) * 0.016);
+              (Math.sin(twoPi * frequency * age) + Math.sin(twoPi * frequency * 3 * age) * 0.12) * Math.min(1, age / 0.006) * Math.exp(-age / 0.11) * (1 - ease(age / 0.5)) * strength);
+          }
+        }
+        // Now and then a coin drops into a return tray.
+        for (const start of [9.5, 31]) {
+          for (const [bounce, level] of [[0, 1], [0.11, 0.5], [0.19, 0.25]]) {
+            addEvent(mix, start + bounce, 0.4, age => (Math.sin(twoPi * 1850 * age) + Math.sin(twoPi * 2760 * age) * 0.6 + Math.sin(twoPi * 4120 * age) * 0.25)
+              * Math.min(1, age / 0.001) * Math.exp(-age / 0.09) * (1 - ease(age / 0.4)) * 0.012 * level);
           }
         }
       });
@@ -304,20 +339,24 @@ const layers = [
     id: 'train-rails', seed: 192161, rms: 0.10,
     build(random) {
       return render(48, 6, (mix, frame) => {
-        // Carriage rumble with a soft band of wheel noise, swaying slowly.
-        const rumble = lowpass(120), rumbleSmooth = lowpass(120), wheel = lowpass(600), wheelFloor = lowpass(180);
-        addBed(mix, frame, random, (white, t) => {
-          const band = wheel(white);
-          return rumbleSmooth(rumble(white)) * 1.4 * (1 + 0.12 * drift(frame, t, 4))
-            + (band - wheelFloor(band)) * 0.08 * (1 + 0.2 * drift(frame, t, 6, 0.5));
-        });
-        // Wheels over rail joints: two bogies of two axles, once per carriage length.
+        // Carriage rumble kept low, with a soft band of wheel noise.
+        const rumble = lowpass(120), rumbleSmooth = lowpass(120), wheel = resonator(0.9);
+        addBed(mix, frame, random, (white, t) => rumbleSmooth(rumble(white)) * 0.25 * (1 + 0.12 * drift(frame, t, 4))
+          + wheel(white, 450) * 0.03 * (1 + 0.2 * drift(frame, t, 6, 0.5)));
+        // Wheels over rail joints: two bogies of two axles, once per carriage length, each with a faint ring of steel.
         for (let start = 0.3; start < frame.seconds; start += 1.6) {
-          for (const [offset, strength] of [[0, 0.09], [0.13, 0.07], [0.62, 0.08], [0.75, 0.06]]) {
-            addEvent(mix, start + offset, 0.4, age => (Math.sin(twoPi * 92 * age) + Math.sin(twoPi * 184 * age) * 0.2)
-              * Math.min(1, age / 0.003) * Math.exp(-age / 0.05) * (1 - ease(age / 0.4)) * strength);
+          for (const [offset, strength] of [[0, 0.11], [0.13, 0.085], [0.62, 0.1], [0.75, 0.07]]) {
+            addEvent(mix, start + offset, 0.4, age => ((Math.sin(twoPi * 92 * age) + Math.sin(twoPi * 184 * age) * 0.3) * Math.exp(-age / 0.05)
+              + (Math.sin(twoPi * 1180 * age) + Math.sin(twoPi * 1730 * age) * 0.6) * 0.08 * Math.exp(-age / 0.03))
+              * Math.min(1, age / 0.002) * (1 - ease(age / 0.4)) * strength);
             addNoiseSwell(mix, start + offset, 0.15, random, 1400, strength * 0.5, age => Math.min(1, age / 0.002) * Math.exp(-age / 0.02) * (1 - ease(age / 0.15)));
           }
+        }
+        // The carriage creaks as it sways.
+        for (const start of [5.1, 16.8, 27.4, 40.2]) {
+          const from = random.between(190, 230);
+          addEvent(mix, start, 0.7, age => Math.sin(twoPi * from * (age - 0.15 * age * age)) * (0.5 + 0.5 * Math.sin(twoPi * 38 * age))
+            * ease(age / 0.1) * (1 - ease((age - 0.4) / 0.3)) * 0.03);
         }
         // A horn, once, far down the line.
         addEvent(mix, 29, 5, age => (Math.sin(twoPi * midi(63) * age) + Math.sin(twoPi * midi(66) * age)
@@ -360,25 +399,31 @@ const layers = [
     id: 'cabin-fire', seed: 725293, rms: 0.10,
     build(random) {
       return render(48, 6, (mix, frame) => {
-        // A low, steady fire and the wind heard through log walls.
-        const roar = lowpass(260), roarSmooth = lowpass(260), wind = lowpass(700), windSmooth = lowpass(700), windFloor = lowpass(200);
+        // The fire breathing low, with a faint hiss of flame.
+        const roar = lowpass(260), roarSmooth = lowpass(260), hiss = resonator(1.2);
+        addBed(mix, frame, random, (white, t) => roarSmooth(roar(white)) * 0.25 * (1 + 0.3 * drift(frame, t, 7))
+          + hiss(white, 1800) * 0.008);
+        // Wind whistling through a gap in the logs: a narrow, slowly gliding tone rather than a roar.
+        const whistle = resonator(14);
         addBed(mix, frame, random, (white, t) => {
-          const band = windSmooth(wind(white));
-          const gust = 1 + 0.5 * drift(frame, t, 2, 0.4) + 0.25 * drift(frame, t, 5, 2.1);
-          return roarSmooth(roar(white)) * 1.1 * (1 + 0.1 * drift(frame, t, 7)) + (band - windFloor(band)) * 0.07 * gust;
+          const gust = Math.max(0, 0.4 + 0.6 * drift(frame, t, 3, 0.4) + 0.3 * drift(frame, t, 5, 2.1));
+          return whistle(white, 520 + 90 * drift(frame, t, 2, 1) + 40 * drift(frame, t, 7)) * 0.5 * gust * gust;
         });
-        // Sparse, soft crackle: short rounded ticks, never sharp clicks.
-        for (let count = Math.round(frame.seconds * 3); count > 0; count--) {
-          const frequency = random.between(1200, 2600);
-          const decay = random.between(0.002, 0.006);
-          const strength = 0.008 + 0.03 * random.between(0, 1) ** 4;
+        // Crackle: many soft ticks, a few louder, never sharp clicks.
+        for (let count = Math.round(frame.seconds * 14); count > 0; count--) {
+          const frequency = random.between(1000, 3200);
+          const decay = random.between(0.001, 0.004);
+          const strength = 0.015 + 0.06 * random.between(0, 1) ** 4;
           addEvent(mix, random.between(0, frame.seconds), decay * 8, age =>
-            Math.sin(twoPi * frequency * age) * Math.min(1, age / 0.001) * Math.exp(-age / decay) * (1 - ease(age / (decay * 8))) * strength);
+            Math.sin(twoPi * frequency * age) * Math.min(1, age / 0.0007) * Math.exp(-age / decay) * (1 - ease(age / (decay * 8))) * strength);
         }
-        for (let count = Math.round(frame.seconds * 0.25); count > 0; count--) {
-          const frequency = random.between(500, 900);
-          addEvent(mix, random.between(0, frame.seconds), 0.1, age =>
-            Math.sin(twoPi * frequency * age) * Math.min(1, age / 0.002) * Math.exp(-age / 0.015) * (1 - ease(age / 0.1)) * 0.04);
+        // Pops from knots in the wood.
+        for (let count = Math.round(frame.seconds * 0.6); count > 0; count--) {
+          const frequency = random.between(500, 1100);
+          const start = random.between(0, frame.seconds);
+          addEvent(mix, start, 0.1, age =>
+            Math.sin(twoPi * frequency * age) * Math.min(1, age / 0.002) * Math.exp(-age / 0.015) * (1 - ease(age / 0.1)) * 0.06);
+          addNoiseSwell(mix, start, 0.08, random, 2500, 0.05, age => Math.min(1, age / 0.001) * Math.exp(-age / 0.01) * (1 - ease(age / 0.08)));
         }
         // Logs settling, twice.
         for (const start of [17, 38]) {
@@ -415,25 +460,40 @@ const layers = [
     },
   },
   {
-    id: 'lighthouse-waves', seed: 911237, rms: 0.10,
+    id: 'lighthouse-waves', seed: 911237, rms: 0.10, warmth: 4500,
     build(random) {
       return render(48, 10, (mix, frame) => {
-        // A low sea swell and a little wind off the water.
-        const swell = lowpass(120), swellSmooth = lowpass(120), wind = lowpass(500), windFloor = lowpass(150);
-        addBed(mix, frame, random, (white, t) => {
-          const band = wind(white);
-          return swellSmooth(swell(white)) * 1.2 * (1 + 0.3 * drift(frame, t, 6)) + (band - windFloor(band)) * 0.04;
-        });
-        // Six waves, one every eight seconds: a rising wash, then a softer foam tail as it drains off the rocks.
+        // A low sea swell and a little wind, kept in the background.
+        const swell = lowpass(120), swellSmooth = lowpass(120), wind = resonator(0.5);
+        addBed(mix, frame, random, (white, t) => swellSmooth(swell(white)) * 0.3 * (1 + 0.3 * drift(frame, t, 6)) + wind(white, 350) * 0.02);
+        // Six waves, one every eight seconds.
         for (let wave = 0; wave < 6; wave++) {
           const start = wave * 8 + random.between(-0.4, 0.4);
           const size = random.between(0.8, 1.1);
-          addNoiseSwell(mix, start, 8, random, 900, 0.45 * size, age => ease(age / 2.2) * (1 - ease((age - 2.2) / 5.8)));
-          const foam = lowpass(2200), foamSmooth = lowpass(2200), foamFloor = lowpass(600);
-          addEvent(mix, start + 1.6, 7, age => {
-            const band = foamSmooth(foam(random()));
-            return (band - foamFloor(band)) * ease(age / 1.2) * (1 - ease((age - 1.2) / 5.8)) * 0.12 * size;
+          // The wash brightens as the wave breaks, then darkens as it drains away.
+          const wash = resonator(0.7);
+          addEvent(mix, start, 8, age => {
+            const centre = age < 2.2 ? 400 + 700 * ease(age / 2.2) : 1100 - 600 * ease((age - 2.2) / 5);
+            return wash(random(), centre) * ease(age / 2.2) * (1 - ease((age - 2.2) / 5.8)) * 0.25 * size;
           });
+          // Foam fizz: tiny bubbles popping, thinning out as the water drains.
+          for (let count = Math.round(180 * size); count > 0; count--) {
+            const at = 2 + 5 * random.between(0, 1) ** 1.6;
+            const frequency = random.between(1000, 2600);
+            const decay = random.between(0.002, 0.006);
+            const strength = (0.006 + 0.014 * random.between(0, 1) ** 2) * (1 - (at - 2) / 6);
+            addEvent(mix, start + at, decay * 6, age =>
+              Math.sin(twoPi * frequency * (age + 20 * age * age)) * Math.min(1, age / 0.0008) * Math.exp(-age / decay) * (1 - ease(age / (decay * 6))) * strength);
+          }
+          // Pebbles rolling back down the beach behind it.
+          for (let count = Math.round(60 * size); count > 0; count--) {
+            const at = random.between(3.5, 7);
+            const frequency = random.between(700, 1600);
+            const decay = random.between(0.001, 0.003);
+            const strength = random.between(0.01, 0.03);
+            addEvent(mix, start + at, decay * 6, age =>
+              Math.sin(twoPi * frequency * age) * Math.min(1, age / 0.0005) * Math.exp(-age / decay) * (1 - ease(age / (decay * 6))) * strength);
+          }
         }
       });
     },
