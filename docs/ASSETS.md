@@ -8,13 +8,13 @@ These are procedural soundscape layers, created by the coding assistant for Nigh
 
 | File | Scene | Layer | Loop | Source |
 | --- | --- | --- | --- | --- |
-| `public/audio/apartment-rain.wav` | Rainy Apartment | Rain on the window | 48.00 s | Dense patter of tiny soft drops, bigger drops on the glass, sill drips, a bubbling drainpipe, one distant thunder swell, over a light rain wash |
+| `public/audio/apartment-rain.wav` | Rainy Apartment | Rain on the window | 48.00 s | Rain only: a dense spray of tiny impacts, bigger drops on the glass, sill drips |
 | `public/audio/apartment-lofi.wav` | Rainy Apartment | Lofi | 54.86 s | Original 16-bar piece at 70 BPM: electric-piano chords, sine bass, soft drums, sparse melody, faint record crackle |
 | `public/audio/highway-road.wav` | Midnight Highway | Road hum | 48.00 s | Engine note with slow pitch drift, paired expansion-joint thumps, two cars passing the other way, over low road noise |
 | `public/audio/highway-synth.wav` | Midnight Highway | Soft synth | 60.00 s | Original sine pads, a rounded low pulse, and a slow bell phrase |
-| `public/audio/arcade-hum.wav` | Empty Arcade | Machine hum | 48.00 s | Mains hum, a ceiling fan's slow beat, attract-mode blips from several cabinets, two coin drops, a little ventilation air |
+| `public/audio/arcade-hum.wav` | Empty Arcade | Neon hum | 48.00 s | Neon-sign buzz at 120 Hz and harmonics from two signs, a transformer hum, one sign occasionally flickering |
 | `public/audio/arcade-chimes.wav` | Empty Arcade | Chimes | 60.00 s | Original synthesized chimes and pads; no game samples or game melodies |
-| `public/audio/train-rails.wav` | Night Train | Rails | 48.00 s | Rail-joint clatter with a faint steel ring, carriage creaks, one distant two-tone horn, over low rumble |
+| `public/audio/train-rails.wav` | Night Train | Rails | 48.00 s | Rail-joint clatter with a faint steel ring, a low traction hum and singing wheels, carriage creaks, one distant horn |
 | `public/audio/train-keys.wav` | Night Train | Keys | 60.00 s | Original 16-bar piece at 64 BPM: electric-piano chords, sine bass, sparse melody |
 | `public/audio/cabin-fire.wav` | Snowed-In Cabin | Fire and wind | 48.00 s | Soft crackle and knot pops, wind whistling through a gap in the logs, two logs settling, over a low fire bed |
 | `public/audio/cabin-piano.wav` | Snowed-In Cabin | Felt piano | 64.00 s | Original 16-bar piece at 60 BPM: soft-hammered piano arpeggios, low bass notes, a sparse melody |
