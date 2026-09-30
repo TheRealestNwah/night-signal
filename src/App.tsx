@@ -4,6 +4,8 @@ import { SCENES, sceneFor, type SceneId } from './scenes';
 import { Scene } from './Scene';
 import { useSoundscape } from './useSoundscape';
 
+const credits = SCENES.flatMap(scene => scene.layers.flatMap(layer => layer.credit ? [{ scene: scene.name, label: layer.label, credit: layer.credit }] : []));
+
 function initialScene(): SceneId { return sceneFor(location.hash.slice(1)).id; }
 
 function Dialog({ title, children, onClose }: { title: string; children: ReactNode; onClose: () => void }) {
@@ -40,6 +42,11 @@ export default function App() {
     return () => { window.removeEventListener('keydown', escape); window.removeEventListener('hashchange', hash); };
   }, []);
   useEffect(() => { document.title = `${scene.name} · Night Signal`; }, [scene.name]);
+  // Tint the mobile browser bar to match the scene's palette.
+  useEffect(() => {
+    const background = getComputedStyle(document.querySelector('.app')!).getPropertyValue('--bg').trim();
+    document.querySelector('meta[name="theme-color"]')?.setAttribute('content', background);
+  }, [scene.id]);
 
   function chooseScene(id: SceneId) {
     setSceneId(id);
@@ -68,7 +75,7 @@ export default function App() {
           <div className="scene-actions"><button onClick={() => setMotionPaused(!motionPaused)} aria-label={motionPaused ? 'Resume scene motion' : 'Pause scene motion'} title={motionPaused ? 'Resume scene motion' : 'Pause scene motion'}>{motionPaused ? <Play size={13}/> : <Pause size={13}/>}<span>{motionPaused ? 'Motion off' : 'Motion on'}</span></button><button onClick={() => setHidden(true)}><Eye size={14}/><span>Hide interface</span></button></div>
           <section className="player" aria-label="Soundscape player">
             <div className="track-art"><Radio size={23}/></div>
-            <div className="track-info"><span className="micro-label" role="status">{playing ? 'Now playing' : sound.status === 'loading' ? 'Tuning in' : sound.status === 'paused' ? 'Paused' : ''}</span><strong>{scene.soundscape}</strong><span>Night Signal originals <span className="track-dot">·</span> {scene.tag}</span></div>
+            <div className="track-info"><span className="micro-label" role="status">{playing ? 'Now playing' : sound.status === 'loading' ? 'Tuning in' : sound.status === 'paused' ? 'Paused' : ''}</span><strong>{scene.soundscape}</strong><span>{scene.tag}</span></div>
             <div className="transport">
               {started ? <button className="play-button" aria-label={playing ? 'Pause soundscape' : 'Play soundscape'} onClick={sound.toggle} disabled={sound.status === 'loading'}>{playing ? <Pause size={18} fill="currentColor"/> : <Play size={18} fill="currentColor"/>}</button>
                 : <button className="listen-button" onClick={sound.start}><Headphones size={17}/>{listenLabel}</button>}
@@ -89,6 +96,6 @@ export default function App() {
     </main>
     {hidden && <button className="restore-interface" onClick={() => setHidden(false)}><Eye size={16}/> Show interface <kbd>Esc</kbd></button>}
 
-    {about && <Dialog title="A little quiet for the late hours." onClose={() => setAbout(false)}><p>Night Signal is a place to put the day down. Pick a scene, press <strong>Start listening</strong>, and let it run while you read, work, or drift off.</p><div className="about-rule"/><p>Every scene has two layers: the sound of the place itself, and a little music behind it. Set each one where you like it, or turn one all the way down. Your mix is remembered on this device.</p><p className="subtle">The soundscapes are original, procedurally composed loops and the scenes are original illustrations. No accounts, no tracking, nothing to upload. Reduced-motion preferences are respected, and you can pause all scene motion.</p><a className="text-link" href="https://github.com/TheRealestNwah/night-signal" target="_blank" rel="noreferrer">Source, credits & documentation <ArrowUpRight size={14}/></a></Dialog>}
+    {about && <Dialog title="A little quiet for the late hours." onClose={() => setAbout(false)}><p>Night Signal is a place to put the day down. Pick a scene, press <strong>Start listening</strong>, and let it run while you read, work, or drift off.</p><div className="about-rule"/><p>Every scene has two layers: the sound of the place itself, and a little music behind it. Set each one where you like it, or turn one all the way down. Your mix is remembered on this device.</p><p className="subtle">The music and most of the ambience are original, procedurally composed loops, and the scenes are original illustrations. A few ambience layers are recordings used under the Pixabay Content License:</p><ul className="credits">{credits.map(({ scene: name, label, credit }) => <li key={credit.url}>{name}, {label.toLowerCase()}: <a href={credit.url} target="_blank" rel="noreferrer">“{credit.title}”</a> by {credit.by}</li>)}</ul><p className="subtle">No accounts, no tracking, nothing to upload. Reduced-motion preferences are respected, and you can pause all scene motion.</p><a className="text-link" href="https://github.com/TheRealestNwah/night-signal" target="_blank" rel="noreferrer">Source, credits & documentation <ArrowUpRight size={14}/></a></Dialog>}
   </div>;
 }

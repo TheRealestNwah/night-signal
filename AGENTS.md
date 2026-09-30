@@ -10,6 +10,7 @@ A static site of calming illustrated scenes, each with looping ambience and musi
 - Keep audio playback separate from scene rendering. A new scene is artwork plus a catalog entry and its layers; it should not change the player.
 - Audio requires an explicit user gesture. No audio may be fetched or played before it. Volume, mute, and layer levels are local preferences.
 - Every layer must loop seamlessly. `scripts/generate-audio.mjs` renders past the loop length and folds the overhang back; `tests/catalog.test.ts` checks the seam, headroom, and format. Run `npm run audio:generate` and commit the WAVs whenever the generator changes.
+- Some ambience layers are processed third-party recordings, not generated: the generator must not produce them, and each needs a `credit` in `src/scenes.ts` (shown in the About dialog) plus its source, license, and modifications under "Licensed recordings" in `docs/ASSETS.md`. They still follow the mono 22,050 Hz 16-bit, seamless-loop, and headroom rules.
 - Keep soundscapes calm: no raw white noise, harsh highs, or sudden loud events.
 - Keep continuous scene animation restrained, efficient, and compatible with reduced motion. Verify desktop and mobile layouts in a real browser.
 - Only add audio/artwork with clear provenance and permission for distribution. Update `docs/ASSETS.md` when assets change.

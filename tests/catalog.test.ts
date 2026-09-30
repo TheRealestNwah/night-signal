@@ -23,6 +23,13 @@ describe('scene catalog', () => {
       expect(layer.defaultLevel).toBeLessThanOrEqual(1);
     }
   });
+  it('credits exactly the layers the generator does not make', () => {
+    const generator = readFileSync(new URL('../scripts/generate-audio.mjs', import.meta.url), 'utf8');
+    for (const layer of layers) {
+      expect(Boolean(layer.credit), layer.id).toBe(!generator.includes(`id: '${layer.id}'`));
+      if (layer.credit) expect(layer.credit.url).toMatch(/^https:\/\//);
+    }
+  });
   it('falls back to the apartment for unknown scene ids', () => {
     expect(sceneFor('arcade').id).toBe('arcade');
     expect(sceneFor('nowhere').id).toBe('apartment');
