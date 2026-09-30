@@ -1,4 +1,4 @@
-export type SceneId = 'apartment' | 'highway' | 'arcade' | 'train' | 'cabin';
+export type SceneId = 'apartment' | 'highway' | 'arcade' | 'train' | 'cabin' | 'lighthouse';
 export type LayerKind = 'ambience' | 'music';
 /** One seamless loop. A scene's layers play together and are mixed by the listener. */
 export interface Layer { id: string; kind: LayerKind; label: string; url: string; defaultLevel: number }
@@ -41,6 +41,13 @@ export const SCENES: SceneInfo[] = [
     layers: [
       { id: 'cabin-fire', kind: 'ambience', label: 'Fire and wind', url: '/audio/cabin-fire.wav', defaultLevel: 0.25 },
       { id: 'cabin-piano', kind: 'music', label: 'Felt piano', url: '/audio/cabin-piano.wav', defaultLevel: 0.5 },
+    ],
+  },
+  {
+    id: 'lighthouse', name: 'Lighthouse Keeper', soundscape: 'Night Watch', description: 'Keep the light for a while.', tag: 'Waves / drone and bell',
+    layers: [
+      { id: 'lighthouse-waves', kind: 'ambience', label: 'Waves', url: '/audio/lighthouse-waves.wav', defaultLevel: 0.25 },
+      { id: 'lighthouse-drone', kind: 'music', label: 'Drone and bell', url: '/audio/lighthouse-drone.wav', defaultLevel: 0.5 },
     ],
   },
 ];

@@ -414,6 +414,48 @@ const layers = [
       });
     },
   },
+  {
+    id: 'lighthouse-waves', seed: 911237, rms: 0.10,
+    build(random) {
+      return render(48, 10, (mix, frame) => {
+        // A low sea swell and a little wind off the water.
+        const swell = lowpass(120), swellSmooth = lowpass(120), wind = lowpass(500), windFloor = lowpass(150);
+        addBed(mix, frame, random, (white, t) => {
+          const band = wind(white);
+          return swellSmooth(swell(white)) * 1.2 * (1 + 0.3 * drift(frame, t, 6)) + (band - windFloor(band)) * 0.04;
+        });
+        // Six waves, one every eight seconds: a rising wash, then a softer foam tail as it drains off the rocks.
+        for (let wave = 0; wave < 6; wave++) {
+          const start = wave * 8 + random.between(-0.4, 0.4);
+          const size = random.between(0.8, 1.1);
+          addNoiseSwell(mix, start, 8, random, 900, 0.45 * size, age => ease(age / 2.2) * (1 - ease((age - 2.2) / 5.8)));
+          const foam = lowpass(2200), foamSmooth = lowpass(2200), foamFloor = lowpass(600);
+          addEvent(mix, start + 1.6, 7, age => {
+            const band = foamSmooth(foam(random()));
+            return (band - foamFloor(band)) * ease(age / 1.2) * (1 - ease((age - 1.2) / 5.8)) * 0.12 * size;
+          });
+        }
+      });
+    },
+  },
+  {
+    id: 'lighthouse-drone', seed: 663161, rms: 0.12,
+    build() {
+      // Whole cycles per loop, so the drone lines up with itself at the seam.
+      const loopHz = note => Math.round(midi(note) * 60) / 60;
+      const chords = [[50, 52, 57, 62], [50, 57, 60, 64], [50, 55, 59, 62], [50, 55, 60, 62]];
+      const bells = [74, 69, 72, 67, 74, 76, 72, 69];
+      return render(60, 20, (mix, frame) => {
+        addEvent(mix, 0, frame.seconds, age => (Math.sin(twoPi * loopHz(38) * age) * 0.030 * (1 + 0.25 * drift(frame, age, 2))
+          + Math.sin(twoPi * loopHz(45) * age) * 0.016 * (1 + 0.3 * drift(frame, age, 3, 1.1))
+          + Math.sin(twoPi * loopHz(50) * age) * 0.010 * (1 + 0.3 * drift(frame, age, 5, 2.3))));
+        for (const [index, chord] of chords.entries()) addPad(mix, index * 15, chord, 0.8);
+        for (const [index, note] of bells.entries()) addBell(mix, index * 7.5 + 3, note, 0.3);
+        // A buoy bell further out.
+        for (const start of [12, 42]) addBell(mix, start, 57, 0.28);
+      });
+    },
+  },
 ];
 
 function wav(samples, gain) {
