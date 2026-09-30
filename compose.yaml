@@ -1,0 +1,17 @@
+services:
+  night-signal:
+    build: .
+    init: true
+    ports:
+      - "3000:3000"
+    environment:
+      NODE_ENV: production
+      HOST: 0.0.0.0
+      PORT: 3000
+      DATABASE_PATH: /app/data/night-signal.sqlite
+    volumes:
+      - night-signal-data:/app/data
+    restart: unless-stopped
+
+volumes:
+  night-signal-data:
