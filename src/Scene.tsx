@@ -1,5 +1,6 @@
 import type { SceneId } from './scenes';
 import { ArcadeArt, HighwayArt } from './OtherScenes';
+import { CabinArt } from './CabinArt';
 import { TrainArt } from './TrainArt';
 
 const buildings = [
@@ -59,6 +60,6 @@ export function ApartmentArt({ miniature = false }: { miniature?: boolean }) {
 }
 
 export function Scene({ scene, miniature = false }: { scene: SceneId; miniature?: boolean }) {
-  const Art = { apartment: ApartmentArt, highway: HighwayArt, arcade: ArcadeArt, train: TrainArt }[scene];
+  const Art = { apartment: ApartmentArt, highway: HighwayArt, arcade: ArcadeArt, train: TrainArt, cabin: CabinArt }[scene];
   return <Art miniature={miniature}/>;
 }

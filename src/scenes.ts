@@ -1,4 +1,4 @@
-export type SceneId = 'apartment' | 'highway' | 'arcade' | 'train';
+export type SceneId = 'apartment' | 'highway' | 'arcade' | 'train' | 'cabin';
 export type LayerKind = 'ambience' | 'music';
 /** One seamless loop. A scene's layers play together and are mixed by the listener. */
 export interface Layer { id: string; kind: LayerKind; label: string; url: string; defaultLevel: number }
@@ -34,6 +34,13 @@ export const SCENES: SceneInfo[] = [
     layers: [
       { id: 'train-rails', kind: 'ambience', label: 'Rails', url: '/audio/train-rails.wav', defaultLevel: 0.25 },
       { id: 'train-keys', kind: 'music', label: 'Keys', url: '/audio/train-keys.wav', defaultLevel: 0.5 },
+    ],
+  },
+  {
+    id: 'cabin', name: 'Snowed-In Cabin', soundscape: 'Hearthside', description: 'Nowhere to be until spring.', tag: 'Fire and wind / felt piano',
+    layers: [
+      { id: 'cabin-fire', kind: 'ambience', label: 'Fire and wind', url: '/audio/cabin-fire.wav', defaultLevel: 0.25 },
+      { id: 'cabin-piano', kind: 'music', label: 'Felt piano', url: '/audio/cabin-piano.wav', defaultLevel: 0.5 },
     ],
   },
 ];
