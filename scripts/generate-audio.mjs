@@ -198,39 +198,6 @@ const layers = [
     },
   },
   {
-    id: 'highway-road', seed: 130363, rms: 0.10,
-    build(random) {
-      return render(48, 8, (mix, frame) => {
-        // Road noise, kept low under the engine.
-        const rumble = lowpass(150), rumbleSmooth = lowpass(150), tyre = resonator(0.8);
-        addBed(mix, frame, random, (white, t) => rumbleSmooth(rumble(white)) * 0.2 * (1 + 0.1 * drift(frame, t, 3))
-          + tyre(white, 520) * 0.03 * (1 + 0.2 * drift(frame, t, 4, 0.8)));
-        // Engine: a steady note that rises and settles with the road. 48 Hz and its harmonics complete whole cycles per loop.
-        addEvent(mix, 0, frame.seconds, age => {
-          const phase = twoPi * (48 * age + 1.5 * frame.seconds / twoPi / 2 * (1 - Math.cos(twoPi * 2 * age / frame.seconds)));
-          let value = 0;
-          for (const [harmonic, level] of [[1, 1], [2, 0.55], [3, 0.35], [4, 0.2], [5, 0.1]]) value += Math.sin(harmonic * phase) * level;
-          return value * (1 + 0.12 * Math.sin(phase / 2)) * 0.03;
-        });
-        // Expansion joints: a paired soft thump every six seconds.
-        for (let start = 2; start < frame.seconds; start += 6) {
-          for (const offset of [0, 0.17]) {
-            addEvent(mix, start + offset, 0.5, age => Math.sin(twoPi * 68 * age) * Math.min(1, age / 0.004) * Math.exp(-age / 0.07) * (1 - ease(age / 0.5)) * 0.1);
-          }
-        }
-        // Cars passing the other way: a whoosh that falls in pitch, with their engine gliding down underneath.
-        for (const start of [14, 37]) {
-          const whoosh = resonator(1.4);
-          addEvent(mix, start, 6, age => {
-            const envelope = Math.exp(-(((age - 3) / 1.1) ** 2)) * ease(age / 0.8) * (1 - ease((age - 5) / 1));
-            const pitch = 1 + 0.06 * Math.tanh((3 - age) * 1.5);
-            return (whoosh(random(), 900 * pitch) * 0.3 + Math.sin(twoPi * 110 * pitch * age) * 0.04) * envelope;
-          });
-        }
-      });
-    },
-  },
-  {
     id: 'highway-synth', seed: 281557, rms: 0.12,
     build() {
       const chords = [[40, 47, 54, 59], [43, 50, 57, 62], [38, 45, 52, 57], [45, 52, 59, 64]];

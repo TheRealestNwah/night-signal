@@ -9,7 +9,6 @@ These are procedural soundscape layers, created by the coding assistant for Nigh
 | File | Scene | Layer | Loop | Source |
 | --- | --- | --- | --- | --- |
 | `public/audio/apartment-lofi.wav` | Rainy Apartment | Lofi | 54.86 s | Original 16-bar piece at 70 BPM: electric-piano chords, sine bass, soft drums, sparse melody, faint record crackle |
-| `public/audio/highway-road.wav` | Midnight Highway | Road hum | 48.00 s | Engine note with slow pitch drift, paired expansion-joint thumps, two cars passing the other way, over low road noise |
 | `public/audio/highway-synth.wav` | Midnight Highway | Soft synth | 60.00 s | Original sine pads, a rounded low pulse, and a slow bell phrase |
 | `public/audio/arcade-hum.wav` | Empty Arcade | Neon hum | 48.00 s | Neon-sign buzz at 120 Hz and harmonics from two signs, a transformer hum, one sign occasionally flickering |
 | `public/audio/arcade-chimes.wav` | Empty Arcade | Chimes | 60.00 s | Original synthesized chimes and pads; no game samples or game melodies |
@@ -31,12 +30,15 @@ These layers are processed from third-party recordings. They are **not** covered
 | --- | --- | --- | --- | --- | --- |
 | `public/audio/train-rails.wav` | Night Train | Rails | 72.17 s | ["railway -Train"](https://pixabay.com/sound-effects/film-special-effects-railway-train-339502/) by IMGMIDI, Pixabay sound effect 339502 | [Pixabay Content License](https://pixabay.com/service/license-summary/) |
 | `public/audio/apartment-rain.wav` | Rainy Apartment | Rain on the window | 94.00 s | ["Thunderstorm 2"](https://pixabay.com/sound-effects/film-special-effects-thunderstorm-2-516370/) by loswin23, Pixabay sound effect 516370 | [Pixabay Content License](https://pixabay.com/service/license-summary/) |
+| `public/audio/highway-road.wav` | Midnight Highway | Road hum | 46.13 s | ["Inside Car (Driving)"](https://pixabay.com/sound-effects/city-inside-car-driving-24677/) by Fabrizio84 (Freesound), uploaded by freesound_community, Pixabay sound effect 24677 | [Pixabay Content License](https://pixabay.com/service/license-summary/) |
 
 The Pixabay Content License allows free use and modification without attribution, but not selling or distributing the content on a standalone basis. Credit is given here anyway.
 
 Modifications to the railway recording: decoded from the downloaded MP3, downmixed to mono and resampled to 22,050 Hz; its slow crescendo levelled with a smoothed 4-second RMS envelope; spliced into two passes (the whole recording, then again from 13.29 s) with a 1.5-second equal-power crossfade placed where the clatter rhythm lines up; the end crossfaded over the start for a seamless loop; loudness-matched to the other ambience layers (RMS 0.10, peaks below -1 dBFS).
 
 Modifications to the thunderstorm recording: decoded from the downloaded MP3, downmixed to mono and resampled to 22,050 Hz; the excerpt from 30 s to 126 s kept; its loudness swings halved in dB with a smoothed 1-second RMS envelope, so thunder rolls swell rather than jump out; the last 2 seconds crossfaded over the start for a seamless loop; loudness-matched (RMS 0.10, peaks below -1 dBFS).
+
+Modifications to the car recording: decoded from the downloaded MP3, downmixed to mono and resampled to 22,050 Hz; the steady cruising stretch from 92 s to the end kept (the louder acceleration earlier in the file is left out); loudness swings halved in dB with a smoothed 1-second RMS envelope; the last 2 seconds crossfaded over the start for a seamless loop; loudness-matched (RMS 0.10, peaks below -1 dBFS).
 
 ## Artwork and typography
 
