@@ -10,25 +10,25 @@ test('starts, pauses, and resumes the apartment soundscape', async ({ page }) =>
 
   const player = page.getByRole('region', { name: 'Soundscape player' });
   await player.getByRole('button', { name: 'Start listening' }).click();
-  await expect(player.getByRole('status')).toHaveText('NOW PLAYING');
+  await expect(player.getByRole('status')).toHaveText('Now playing');
   expect(audioRequests.sort()).toEqual(['/audio/apartment-lofi.wav', '/audio/apartment-rain.wav']);
 
   await player.getByRole('button', { name: 'Pause soundscape' }).click();
-  await expect(player.getByRole('status')).toHaveText('PAUSED');
+  await expect(player.getByRole('status')).toHaveText('Paused');
   await player.getByRole('button', { name: 'Play soundscape' }).click();
-  await expect(player.getByRole('status')).toHaveText('NOW PLAYING');
+  await expect(player.getByRole('status')).toHaveText('Now playing');
 });
 
 test('switches scenes and keeps playing', async ({ page }) => {
   await page.goto('/');
   const player = page.getByRole('region', { name: 'Soundscape player' });
   await player.getByRole('button', { name: 'Start listening' }).click();
-  await expect(player.getByRole('status')).toHaveText('NOW PLAYING');
+  await expect(player.getByRole('status')).toHaveText('Now playing');
 
   await page.getByRole('button', { name: /Midnight Highway/ }).click();
   await expect(page.getByRole('heading', { level: 1 })).toHaveText(/Midnight\s*Highway/);
   await expect(page).toHaveURL(/#highway$/);
-  await expect(player.getByRole('status')).toHaveText('NOW PLAYING');
+  await expect(player.getByRole('status')).toHaveText('Now playing');
   await expect(player.getByLabel('Road hum')).toBeVisible();
   await expect(player.getByLabel('Soft synth')).toBeVisible();
 });
