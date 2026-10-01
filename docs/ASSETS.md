@@ -18,7 +18,7 @@ These are procedural soundscape layers, created by the coding assistant for Nigh
 | `public/audio/lighthouse-waves.wav` | Lighthouse Keeper | Waves | 48.00 s | Six waves: a wash that brightens and drains, foam fizz of tiny bubbles, pebbles rolling back, over a low swell |
 | `public/audio/lighthouse-drone.wav` | Lighthouse Keeper | Drone and bell | 60.00 s | Original sine drone locked to the loop, slow pads, a sparse bell phrase, and a distant buoy bell |
 
-All audio files, synthetic and recorded, are mono PCM WAVs at 22,050 Hz and 16-bit depth, about 2–4.2 MB each. Each is a seamless loop: the generator renders past the loop length and folds the overhang back onto the start, so decays and noise beds wrap without a click. Layers are loudness-matched by RMS with peaks kept below -1 dBFS. Ambience layers are built mostly from individual synthesized events (drops, clatter, crackle, bubbles), with any noise bed band-limited and kept in the background; no layer contains raw white noise.
+All audio files, synthetic and recorded, are mono PCM WAVs at 22,050 Hz and 16-bit depth, about 2–4.2 MB each. Layers are loudness-matched by RMS with peaks kept below -1 dBFS. For synthetic layers, the generator renders past the loop length and folds the overhang back onto the start, so decays and noise beds wrap without a click. Synthetic ambience uses tonal hums or individual events such as crackle and bubbles, with any noise bed band-limited and kept in the background. Licensed recordings use the separate loop-processing steps documented below.
 
 The reproducible source is [`scripts/generate-audio.mjs`](../scripts/generate-audio.mjs). Run `npm run audio:generate` to recreate every synthetic file without a network connection or sample library. The generator uses fixed random seeds and contains the synthesis, arrangements, loop folding, and WAV encoder.
 
@@ -48,7 +48,9 @@ Interface icons come from the `lucide-react` package under the ISC license, with
 
 ## Replacing the audio or artwork
 
-The scene catalog lives in `src/scenes.ts`. To replace a layer, place the permitted audio file in `public/audio/`, update its URL in the catalog, and add its provenance and permitted uses to this register. A replacement must loop cleanly from its last sample to its first. Keep every layer ID unique. Do not rely on a provider's playback permission as permission to redistribute a downloaded file.
+The scene catalog lives in `src/scenes.ts`. To replace a layer, place the permitted audio file in `public/audio/`, update its URL in the catalog, and add its provenance and permitted uses to this register. A replacement must be a mono 22,050 Hz 16-bit PCM WAV, loop cleanly from its last sample to its first, and preserve the headroom and calm character of the soundscape. Keep every layer ID unique. Do not rely on a provider's playback permission as permission to redistribute a downloaded file.
+
+For a licensed recording, add a `credit` with its title, creator, and source URL to the layer's catalog entry so the About dialog credits it. Remove any generator entry for that layer to prevent regeneration from overwriting the recording. Synthetic layers belong in the generator and do not use a recording credit. Run `npm run check` after replacing audio; the catalog tests check format, headroom, loop seams, and the correspondence between recording credits and generator entries.
 
 For any future third-party asset, record its creator, original source URL, exact license or written permission, required attribution, modifications, and redistribution restrictions before committing the file. Preserve a copy of permission where appropriate. Do not add proprietary game imagery or music without authorization.
 
