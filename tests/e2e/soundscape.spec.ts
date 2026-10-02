@@ -33,6 +33,30 @@ test('switches scenes and keeps playing', async ({ page }) => {
   await expect(player.getByLabel('Soft synth')).toBeVisible();
 });
 
+test('section links keep the selected scene and audio', async ({ page, isMobile }) => {
+  await page.goto('/');
+  const player = page.getByRole('region', { name: 'Soundscape player' });
+  await player.getByRole('button', { name: 'Start listening' }).click();
+  await page.getByRole('button', { name: /Midnight Highway/ }).click();
+  await expect(player.getByRole('status')).toHaveText('Now playing');
+
+  // The section link is hidden on phones, so only desktop clicks it.
+  if (!isMobile) {
+    await page.getByRole('navigation', { name: 'Main navigation' }).getByRole('link', { name: 'The scenes' }).click();
+    await expect(page).toHaveURL(/#environments$/);
+    await expect(page.getByRole('heading', { level: 1 })).toHaveText(/Midnight\s*Highway/);
+    await expect(player.getByRole('status')).toHaveText('Now playing');
+    await expect(player.getByLabel('Road hum')).toBeVisible();
+  }
+
+  await page.getByRole('link', { name: 'Skip to the scene' }).focus();
+  await page.keyboard.press('Enter');
+  await expect(page).toHaveURL(/#main$/);
+  await expect(page.getByRole('heading', { level: 1 })).toHaveText(/Midnight\s*Highway/);
+  await expect(player.getByRole('status')).toHaveText('Now playing');
+  await expect(player.getByLabel('Road hum')).toBeVisible();
+});
+
 test('remembers the mix and opens a scene from its link', async ({ page }) => {
   await page.goto('/#arcade');
   await expect(page.getByRole('heading', { level: 1 })).toHaveText(/Empty\s*Arcade/);

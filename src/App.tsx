@@ -36,7 +36,8 @@ export default function App() {
   }, []);
   useEffect(() => {
     const escape = (event: KeyboardEvent) => { if (event.key === 'Escape') setHidden(false); };
-    const hash = () => setSceneId(initialScene());
+    // Section anchors such as #main and #environments also change the hash; only scene ids switch scenes.
+    const hash = () => { const id = location.hash.slice(1); if (SCENES.some(scene => scene.id === id)) setSceneId(id as SceneId); };
     window.addEventListener('keydown', escape);
     window.addEventListener('hashchange', hash);
     return () => { window.removeEventListener('keydown', escape); window.removeEventListener('hashchange', hash); };
