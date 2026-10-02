@@ -2,7 +2,7 @@
 // Usage: npm run build && npm run preview (in another terminal), then npm run screenshots.
 import { chromium, devices } from '@playwright/test';
 import { mkdir } from 'node:fs/promises';
-import { fileURLToPath } from 'node:url';
+import { fileURLToPath, URL } from 'node:url';
 
 const BASE = process.env.BASE_URL ?? 'http://127.0.0.1:4173';
 const SCENES = ['apartment', 'highway', 'arcade', 'train', 'cabin', 'lighthouse'];
