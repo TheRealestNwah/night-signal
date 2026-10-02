@@ -43,7 +43,8 @@ test('section links keep the selected scene and audio', async ({ page, isMobile 
   // The section link is hidden on phones, so only desktop clicks it.
   if (!isMobile) {
     await page.getByRole('navigation', { name: 'Main navigation' }).getByRole('link', { name: 'The scenes' }).click();
-    await expect(page).toHaveURL(/#environments$/);
+    await expect(page).toHaveURL(/#highway$/);
+    await expect(page.locator('#environments')).toBeInViewport();
     await expect(page.getByRole('heading', { level: 1 })).toHaveText(/Midnight\s*Highway/);
     await expect(player.getByRole('status')).toHaveText('Now playing');
     await expect(player.getByLabel('Road hum')).toBeVisible();
@@ -51,10 +52,14 @@ test('section links keep the selected scene and audio', async ({ page, isMobile 
 
   await page.getByRole('link', { name: 'Skip to the scene' }).focus();
   await page.keyboard.press('Enter');
-  await expect(page).toHaveURL(/#main$/);
+  await expect(page).toHaveURL(/#highway$/);
   await expect(page.getByRole('heading', { level: 1 })).toHaveText(/Midnight\s*Highway/);
   await expect(player.getByRole('status')).toHaveText('Now playing');
   await expect(player.getByLabel('Road hum')).toBeVisible();
+
+  // The URL still names the scene, so a reload reopens it.
+  await page.reload();
+  await expect(page.getByRole('heading', { level: 1 })).toHaveText(/Midnight\s*Highway/);
 });
 
 test('remembers the mix and opens a scene from its link', async ({ page }) => {

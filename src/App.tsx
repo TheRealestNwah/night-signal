@@ -36,8 +36,13 @@ export default function App() {
   }, []);
   useEffect(() => {
     const escape = (event: KeyboardEvent) => { if (event.key === 'Escape') setHidden(false); };
-    // Section anchors such as #main and #environments also change the hash; only scene ids switch scenes.
-    const hash = () => { const id = location.hash.slice(1); if (SCENES.some(scene => scene.id === id)) setSceneId(id as SceneId); };
+    // Section anchors such as #main and #environments also change the hash. Only scene ids switch scenes;
+    // after the browser has scrolled to a section, restore the previous URL so it still names the scene.
+    const hash = (event: HashChangeEvent) => {
+      const id = location.hash.slice(1);
+      if (SCENES.some(scene => scene.id === id)) setSceneId(id as SceneId);
+      else if (id) history.replaceState(null, '', new URL(event.oldURL).hash || location.pathname);
+    };
     window.addEventListener('keydown', escape);
     window.addEventListener('hashchange', hash);
     return () => { window.removeEventListener('keydown', escape); window.removeEventListener('hashchange', hash); };
