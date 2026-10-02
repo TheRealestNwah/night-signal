@@ -16,7 +16,8 @@
     "test:e2e": "playwright test",
     "audio:generate": "node scripts/generate-audio.mjs",
     "check": "npm run typecheck && npm run lint && npm test && npm run build",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "screenshots": "node scripts/screenshots.mjs"
   },
   "dependencies": {
     "lucide-react": "^1.49.0",

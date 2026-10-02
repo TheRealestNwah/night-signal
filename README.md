@@ -13,6 +13,13 @@ Each scene pairs an ASMR-style ambience with a music layer, and you set the bala
 | Snowed-In Cabin | Fire and wind | Felt piano |
 | Lighthouse Keeper | Waves | Drone and bell |
 
+![Rainy Apartment](docs/screenshots/apartment.jpg)
+
+| | | |
+| --- | --- | --- |
+| ![Midnight Highway](docs/screenshots/highway.jpg) | ![Empty Arcade](docs/screenshots/arcade.jpg) | ![Night Train](docs/screenshots/train.jpg) |
+| ![Snowed-In Cabin](docs/screenshots/cabin.jpg) | ![Lighthouse Keeper](docs/screenshots/lighthouse.jpg) | <img src="docs/screenshots/apartment-phone.jpg" alt="Rainy Apartment on a phone" width="100%"> |
+
 Night Signal is a solo listening experience built as a static site with React, TypeScript, Vite, and the Web Audio API. It has no backend server, accounts, database, tracking, paid APIs, or streaming services.
 
 Most audio is **original and procedurally synthesized** by a script in this repository. Some ambience layers are licensed Pixabay recordings; they are listed in the asset register and are not covered by the MIT license. Scene artwork is original SVG/CSS, with system fonts and Lucide interface icons. See the [asset and source register](docs/ASSETS.md) for provenance and replacement instructions.
@@ -55,6 +62,7 @@ The current build uses root-relative asset URLs such as `/audio/apartment-rain.w
 - `src/mix.ts` holds the level math and saved preferences.
 - `src/Scene.tsx`, `src/OtherScenes.tsx`, and one `src/*Art.tsx` file per newer scene draw the scenes; `src/App.tsx` is the interface.
 - `public/audio/` contains all looping layers. `scripts/generate-audio.mjs` reproduces the nine synthetic layers; the three processed licensed recordings are committed separately and are never overwritten by the generator.
+- `scripts/screenshots.mjs` regenerates the README images in `docs/screenshots/`: run `npm run build`, start `npm run preview`, then `npm run screenshots` in another terminal. Retake them when the interface or artwork changes.
 - `docs/ASSETS.md` records audio and artwork provenance, recording modifications, and license notices.
 - `tests/` contains mixer and audio-catalog unit tests; `tests/e2e/` contains desktop and mobile browser checks.
 
