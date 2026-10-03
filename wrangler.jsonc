@@ -1,0 +1,6 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "night-signal",
+  "compatibility_date": "2026-10-03",
+  "assets": { "directory": "./dist" }
+}

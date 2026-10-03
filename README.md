@@ -49,7 +49,7 @@ Use **Hide interface** for an unobstructed scene, then **Show interface** or Esc
 npm run build
 ```
 
-The `dist/` folder is the whole site, including the audio files. Serve its contents at the root of a domain or subdomain on a static host. No hosting destination or deployment workflow has been configured by this repository.
+The `dist/` folder is the whole site, including the audio files. Serve its contents at the root of a domain or subdomain on a static host. `wrangler.jsonc` configures Cloudflare Workers static assets: connect the repository in Cloudflare (build command `npm run build`, deploy command `npx wrangler deploy`) and each push to `main` publishes `dist/`. Any other static host works too.
 
 The current build uses root-relative asset URLs such as `/audio/apartment-rain.wav` and `/favicon.svg`. Hosting under a subdirectory such as `/night-signal/` requires changes to Vite's base path and the root-relative URLs in the app; uploading the current build there is insufficient. Scene links use URL fragments such as `/#highway`.
 

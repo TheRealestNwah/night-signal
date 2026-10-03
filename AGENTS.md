@@ -15,7 +15,7 @@ A static site of calming illustrated scenes, each with looping ambience and musi
 - Keep soundscapes calm: no raw white noise, harsh highs, or sudden loud events.
 - Keep continuous scene animation restrained, efficient, and compatible with reduced motion. Verify desktop and mobile layouts in a real browser.
 - Only add audio/artwork with clear provenance and permission for distribution. Update `docs/ASSETS.md` when assets change.
-- Hosting currently assumes the root of a domain or subdomain: audio URLs and other app links are root-relative. Subdirectory deployment requires updating those URLs as well as Vite's base path. No deployment workflow or hosting destination is configured.
+- Hosting currently assumes the root of a domain or subdomain: audio URLs and other app links are root-relative. Subdirectory deployment requires updating those URLs as well as Vite's base path. `wrangler.jsonc` and `.node-version` configure Cloudflare's Git-connected static-assets deploy (`npx wrangler deploy` publishes `dist/`); there is no deployment workflow in this repository.
 
 ## Repository workflow
 
