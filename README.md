@@ -1,6 +1,6 @@
 # Night Signal
 
-A little quiet for the late hours. Pick a calming illustrated scene, press **Start listening**, and let it loop while you read, work, or drift off.
+A little quiet for the late hours. **[Listen live](https://night-signal.nmorrow08.workers.dev)**, or run it locally below. Pick a calming illustrated scene, press **Start listening**, and let it loop while you read, work, or drift off.
 
 Each scene pairs an ASMR-style ambience with a music layer, and you set the balance yourself:
 
