@@ -19,8 +19,9 @@ A static site of calming illustrated scenes, each with looping ambience and musi
 
 ## Repository workflow
 
-- File a labeled issue before every new work item; separately discovered bugs get their own labeled issues.
-- One PR per issue/work item. Label every PR using the repository's existing label set.
+- File a labeled issue before starting a work item that is more than a trivial change; separately discovered bugs get their own labeled issues. Typo, comment-only, and other changes small enough to describe fully in the PR title can go straight to a PR.
+- Label every issue using the repository's existing label set. PRs don't need labels.
+- One PR per work item; related items (about 3 max) may share one. Titles are short imperative summaries with the issue number in parentheses; PR bodies say `Closes #N`.
 - Commit, push working branches, and open PRs as needed. Do not directly push to `main`, force-push, or perform destructive Git operations without explicit approval.
-- CI must pass before merging. Merge passing PRs to `main`, then delete merged branches.
+- CI must pass before merging. After opening a PR against `main`, enable auto-merge: `gh pr merge <n> --auto --squash --delete-branch`. Do not auto-merge a PR whose base isn't `main`.
 - Keep repository topics accurate. Never publish a release or push a tag without explicit user permission.
